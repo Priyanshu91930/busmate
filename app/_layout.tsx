@@ -13,15 +13,54 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen 
+          name="index" 
+          options={{ 
+            headerShown: false,
+            title: 'Splash' 
+          }} 
+        />
+        <Stack.Screen 
+          name="login" 
+          options={{ 
+            headerShown: false,
+            title: 'Login' 
+          }} 
+        />
+        <Stack.Screen 
+          name="driver/dashboard" 
+          options={{ 
+            headerShown: false,
+            title: 'Driver Dashboard' 
+          }} 
+        />
+        <Stack.Screen 
+          name="driver/seat-selection" 
+          options={{ 
+            headerShown: false,
+            title: 'Seat Selection' 
+          }} 
+        />
+        <Stack.Screen 
+          name="student/dashboard" 
+          options={{ 
+            headerShown: false,
+            title: 'Student Dashboard' 
+          }} 
+        />
+        <Stack.Screen 
+          name="student/map-view" 
+          options={{ 
+            headerShown: false,
+            title: 'Map View' 
+          }} 
+        />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
