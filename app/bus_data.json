@@ -1,437 +1,143 @@
-[
-  {
-    "registration": "UK07PA1696",
-    "busNumber": 18,
-    "route": "Clock Tower- Darshanlal Chowk- Saharanpur Chowk-ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA1691",
-    "busNumber": 24,
-    "route": "Clock Tower- Darshanlal Chowk- Saharanpur Chowk-ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA3542",
-    "busNumber": 42,
-    "route": "Asley Hall- Clock Tower- Darshanlal Chowk- Saharanpur Chowk-ISBT- Geu"
-  },
-  {
-    "registration": "UA07D3359",
-    "busNumber": 11,
-    "route": "Saharanpur Chowk-Matawala Bagh- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA1699",
-    "busNumber": 9,
-    "route": "Saharanpur Chowk-Matawala Bagh- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA1698",
-    "busNumber": 19,
-    "route": "Saharanpur Chowk-Matawala Bagh- ISBT- Geu"
-  },
-  {
-    "registration": "UA07S2788",
-    "busNumber": 2,
-    "route": "Saharanpur Chowk-Matawala Bagh- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA2333",
-    "busNumber": 7,
-    "route": "Daudwala-Mathurawala-Vishnupuram-Bangali Kothi- Kargi Chowk-ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA1690",
-    "busNumber": 10,
-    "route": "Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5007",
-    "busNumber": 72,
-    "route": "Daudwala-Mathurawala-Vishnupuram-Bangali Kothi- Kargi Chowk-ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA5017",
-    "busNumber": 75,
-    "route": "Bangali Kothi- Kargi Chowk-ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA2191",
-    "busNumber": 6,
-    "route": "Ranipokhri-Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA1811",
-    "busNumber": 14,
-    "route": "Ranipokhri-Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4992",
-    "busNumber": 65,
-    "route": "Ranipokhri-Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA2623",
-    "busNumber": 34,
-    "route": "Ranipokhri-Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4738",
-    "busNumber": 57,
-    "route": "Ranipokhri-Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA2341",
-    "busNumber": 5,
-    "route": "Ranipokhri-Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA1791",
-    "busNumber": 27,
-    "route": "Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA3346",
-    "busNumber": 39,
-    "route": "Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA3345",
-    "busNumber": 40,
-    "route": "Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4117",
-    "busNumber": 49,
-    "route": "Doiwala- Lachiwala- Kuanwala- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA3344",
-    "busNumber": 38,
-    "route": "Gujraunwala- Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5516",
-    "busNumber": 88,
-    "route": "Gujraunwala- Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5551",
-    "busNumber": 95,
-    "route": "Gujraunwala- Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA4742",
-    "busNumber": 61,
-    "route": "Gujraunwala- Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5020",
-    "busNumber": 78,
-    "route": "Gujraunwala- Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA4995",
-    "busNumber": 66,
-    "route": "Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA1695",
-    "busNumber": 12,
-    "route": "Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA4171",
-    "busNumber": 55,
-    "route": "Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5019",
-    "busNumber": 77,
-    "route": "Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA1266",
-    "busNumber": 8,
-    "route": "Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA2190",
-    "busNumber": 20,
-    "route": "Hathibadkala-Garhi Cant-Vijay Coloney- Chir Bagh- CM House- Garhi Cant- ONGC Chowk- Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA1910",
-    "busNumber": 21,
-    "route": "Hathibadkala-Garhi Cant-Vijay Coloney- Chir Bagh- CM House- Garhi Cant- ONGC Chowk- Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA4998",
-    "busNumber": 69,
-    "route": "Garhi Cant-Vijay Coloney- Chir Bagh- CM House- Garhi Cant- ONGC Chowk- Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5030",
-    "busNumber": 81,
-    "route": "Rajender Nagar- Yamuna Coloney-Bindal Pul-  Kishan Nagar- Blood Bank-Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5548",
-    "busNumber": 93,
-    "route": "Rajender Nagar- Yamuna Coloney-Bindal Pul-  Kishan Nagar- Blood Bank-Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5033",
-    "busNumber": 84,
-    "route": "Garhi Cant-Vijay Coloney- Chir Bagh- CM House- Garhi Cant- ONGC Chowk- Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5018",
-    "busNumber": 76,
-    "route": "Garhi Cant-Vijay Coloney- Chir Bagh- CM House- Garhi Cant- ONGC Chowk- Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA2192",
-    "busNumber": 4,
-    "route": "Supply-Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UA07Q4731",
-    "busNumber": 22,
-    "route": "ONGC Chowk- Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA0630",
-    "busNumber": 23,
-    "route": "ONGC Chowk- Ballupur Chowk- GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA3545",
-    "busNumber": 41,
-    "route": "IT Park- Nala Paani Chowk-Shastdhara Crossing- Ladpur- 6 No. Pulia- Fountain Chowk Rispana- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA4161",
-    "busNumber": 54,
-    "route": "IT Park- Nala Paani Chowk-Shastdhara Crossing- Ladpur- 6 No. Pulia- Fountain Chowk Rispana- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA5031",
-    "busNumber": 82,
-    "route": "IT Park- Nala Paani Chowk-Shastdhara Crossing- Ladpur- 6 No. Pulia- Fountain Chowk Rispana- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA4997",
-    "busNumber": 68,
-    "route": "IT Park- Nala Paani Chowk-Shastdhara Crossing- Ladpur- 6 No. Pulia- Fountain Chowk Rispana- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA4741",
-    "busNumber": 60,
-    "route": "Shastdhara Crossing- Ladpur- 6 No. Pulia- Fountain Chowk Rispana- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA4999",
-    "busNumber": 70,
-    "route": "Raipur Chowk- Dobhal Chowk- 6 No. Pulia-Ring Road-Post Office Nehru Gram- Jogiwala- Rispana- ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5515",
-    "busNumber": 87,
-    "route": "Fountain Chowk- Nehru Colony- Rispana- Kargi- Geu"
-  },
-  {
-    "registration": "UK07PA1944",
-    "busNumber": 15,
-    "route": "Nakrounda More- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4778",
-    "busNumber": 62,
-    "route": "Nakrounda More- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA3815",
-    "busNumber": 45,
-    "route": "Nakrounda More- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4739",
-    "busNumber": 58,
-    "route": "Nakrounda More- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4121",
-    "busNumber": 52,
-    "route": "Nakrounda More- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4740",
-    "busNumber": 59,
-    "route": "Nakrounda More- Harawala-Miawala-Mokampur- Jogiwala- Rispana- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4160",
-    "busNumber": 53,
-    "route": "Mokampur- Jogiwala-Rispana- Kargi Chowk- ISBT-Geu"
-  },
-  {
-    "registration": "UK07PA4172",
-    "busNumber": 56,
-    "route": "Rispana-Kargi Chowk-ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA3849",
-    "busNumber": 48,
-    "route": "Rispana-Kargi Chowk-ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5517",
-    "busNumber": 89,
-    "route": "Rispana-Kargi Chowk-ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA4816",
-    "busNumber": 64,
-    "route": "Rispana-Kargi Chowk-ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5029",
-    "busNumber": 80,
-    "route": "Rispana-Kargi Chowk-ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA5514",
-    "busNumber": 86,
-    "route": "Rispana-Kargi Chowk-ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA3814",
-    "busNumber": 44,
-    "route": "Naya Gaon Palio- Badowala- Telpur-Mehuwala- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA2622",
-    "busNumber": 35,
-    "route": "Naya Gaon Palio- Badowala- Telpur-Mehuwala- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA3816",
-    "busNumber": 46,
-    "route": "Naya Gaon Palio- Badowala- Telpur-Mehuwala- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA4119",
-    "busNumber": 51,
-    "route": "Naya Gaon Palio- Badowala- Telpur-Mehuwala- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA5032",
-    "busNumber": 83,
-    "route": "Naya Gaon Palio- Badowala- Telpur-Mehuwala- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA1694",
-    "busNumber": 17,
-    "route": "Badowala- Telpur-Mehuwala- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA0858",
-    "busNumber": 13,
-    "route": "Race Course- Dharampur- Mata Mandir- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA4815",
-    "busNumber": 63,
-    "route": "Race Course- Dharampur- Mata Mandir- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA3546",
-    "busNumber": 43,
-    "route": "Dharampur-Balbir Road- Fountain Chowk- Rispana- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA5016",
-    "busNumber": 74,
-    "route": "Rajpur-Great Value- Dilaram Bazar- Nanni Bakery- Survey Chowk- Dwarka Store- Araghar- Rispana- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA5549",
-    "busNumber": 94,
-    "route": "Rajpur-Great Value- Dilaram Bazar- Nanni Bakery- Survey Chowk- Dwarka Store- Araghar- Rispana- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA5553",
-    "busNumber": 96,
-    "route": "Rajpur-Great Value- Dilaram Bazar- Nanni Bakery- Survey Chowk- Dwarka Store- Araghar- Rispana- Kargi Chowk- ISBT- Geu"
-  },
-  {
-    "registration": "UK07PA2334",
-    "busNumber": 3,
-    "route": "Kulhal-ISBT-Geu/Gehu"
-  },
-  {
-    "registration": "UK07PA2621",
-    "busNumber": 36,
-    "route": "VikasNagar-Tehsil- Harbatpur Chowk- Langa Road- Shaspur- Selaqui-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA3848",
-    "busNumber": 47,
-    "route": "VikasNagar-Tehsil- Harbatpur Chowk- Langa Road- Shaspur- Selaqui-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA4118",
-    "busNumber": 50,
-    "route": "Selaqui Chowk-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5006",
-    "busNumber": 71,
-    "route": "Selaqui Chowk-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5015",
-    "busNumber": 73,
-    "route": "Selaqui Chowk-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA2584",
-    "busNumber": 33,
-    "route": "Selaqui Chowk-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA3348",
-    "busNumber": 37,
-    "route": "Selaqui Chowk-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5028",
-    "busNumber": 79,
-    "route": "Selaqui Chowk-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5541",
-    "busNumber": 90,
-    "route": "Selaqui Chowk-Sudhowala-Nanda Ki Chowki- Premnagar- Panditwari- Vasant Vihar- Baliwala Chowk-GMS Road- Geu"
-  },
-  {
-    "registration": "UK07PA5542",
-    "busNumber": 91,
-    "route": "Prem Nagar- Panditwari- Balliwalachowk- GMS Road- GEU"
-  },
-  {
-    "registration": "UK07PA5547",
-    "busNumber": 92,
-    "route": "Prem Nagar- Panditwari- Balliwalachowk- GMS Road- GEU"
-  },
-  {
-    "registration": "UK07PA5512",
-    "busNumber": 85,
-    "route": "Prem Nagar- Panditwari- Balliwalachowk- GMS Road- GEU"
-  },
-  {
-    "registration": "UK07PA4996",
-    "busNumber": 67,
-    "route": "Prem Nagar- Panditwari- Balliwalachowk- GMS Road- GEU"
-  }
-]
+{
+  "GRAPHIC_ERA_UNIVERSITY": {
+    "name": "Graphic Era University",
+    "coords": { "latitude": 30.2749, "longitude": 77.9967 }
+  },
+  "LOCATION_SUGGESTIONS": [
+    { "name": "6 No. Pulia", "lat": 30.2917, "lng": 78.0470 },
+    { "name": "Araghar", "lat": 30.3060, "lng": 78.0331 },
+    { "name": "Asley Hall", "lat": 30.3275, "lng": 78.0400 },
+    { "name": "Badowala", "lat": 30.2701, "lng": 78.0055 },
+    { "name": "Balbir Road", "lat": 30.3288, "lng": 78.0515 },
+    { "name": "Baliwala Chowk", "lat": 30.3168, "lng": 77.9942 },
+    { "name": "Balliwalachowk", "lat": 30.3168, "lng": 77.9942 },
+    { "name": "Ballupur Chowk", "lat": 30.3396, "lng": 78.0142 },
+    { "name": "Bangali Kothi", "lat": 30.3625, "lng": 78.0620 },
+    { "name": "Bindal Pul", "lat": 30.3218, "lng": 78.0267 },
+    { "name": "Blood Bank", "lat": 30.3295, "lng": 78.0450 },
+    { "name": "CM House", "lat": 30.3340, "lng": 78.0540 },
+    { "name": "Clock Tower", "lat": 30.3256, "lng": 78.0437 },
+    { "name": "Darshanlal Chowk", "lat": 30.3223, "lng": 78.0371 },
+    { "name": "Daudwala", "lat": 30.3015, "lng": 77.9980 },
+    { "name": "Dharampur", "lat": 30.2982, "lng": 78.0305 },
+    { "name": "Doiwala", "lat": 30.1843, "lng": 78.1158 },
+    { "name": "GEU", "lat": 30.2749, "lng": 77.9967 },
+    { "name": "Harawala", "lat": 30.2820, "lng": 78.1100 },
+    { "name": "Harbatpur Chowk", "lat": 30.4500, "lng": 77.7400 },
+    { "name": "Hathibadkala", "lat": 30.3400, "lng": 78.0580 },
+    { "name": "ISBT", "lat": 30.2867, "lng": 77.9963 },
+    { "name": "IT Park", "lat": 30.3540, "lng": 78.0560 },
+    { "name": "Jogiwala", "lat": 30.2871, "lng": 78.0645 },
+    { "name": "Kargi Chowk", "lat": 30.2811, "lng": 78.0163 },
+    { "name": "Kuanwala", "lat": 30.2580, "lng": 78.1050 },
+    { "name": "Kulhal", "lat": 30.4300, "lng": 77.6300 },
+    { "name": "Lachiwala", "lat": 30.2100, "lng": 78.1100 },
+    { "name": "Miawala", "lat": 30.2650, "lng": 78.0900 },
+    { "name": "Mokampur", "lat": 30.2700, "lng": 78.0750 },
+    { "name": "Nanda Ki Chowki", "lat": 30.3600, "lng": 77.9700 },
+    { "name": "Nehru Colony", "lat": 30.2934, "lng": 78.0439 },
+    { "name": "ONGC Chowk", "lat": 30.3350, "lng": 78.0280 },
+    { "name": "Prem Nagar", "lat": 30.3414, "lng": 77.9634 },
+    { "name": "Race Course", "lat": 30.3090, "lng": 78.0440 },
+    { "name": "Raipur Chowk", "lat": 30.3013, "lng": 78.0592 },
+    { "name": "Rajpur", "lat": 30.3879, "lng": 78.0706 },
+    { "name": "Ranipokhri", "lat": 30.2000, "lng": 78.1300 },
+    { "name": "Rispana", "lat": 30.2910, "lng": 78.0530 },
+    { "name": "Saharanpur Chowk", "lat": 30.3129, "lng": 78.0249 },
+    { "name": "Selaqui", "lat": 30.3660, "lng": 77.8580 },
+    { "name": "Shaspur", "lat": 30.3800, "lng": 77.8100 },
+    { "name": "Sudhowala", "lat": 30.3400, "lng": 77.9300 },
+    { "name": "Survey Chowk", "lat": 30.3200, "lng": 78.0490 },
+    { "name": "Vasant Vihar", "lat": 30.3300, "lng": 77.9950 },
+    { "name": "VikasNagar", "lat": 30.4700, "lng": 77.7800 }
+  ],
+  "BUS_ROUTES": [
+    { "registration": "UK07PA1696", "busNumber": "18", "stops": ["Clock Tower", "Darshanlal Chowk", "Saharanpur Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA1691", "busNumber": "24", "stops": ["Clock Tower", "Darshanlal Chowk", "Saharanpur Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA3542", "busNumber": "42", "stops": ["Asley Hall", "Clock Tower", "Darshanlal Chowk", "Saharanpur Chowk", "ISBT", "Geu"] },
+    { "registration": "UA07D3359", "busNumber": "11", "stops": ["Saharanpur Chowk", "Matawala Bagh", "ISBT", "Geu"] },
+    { "registration": "UK07PA1699", "busNumber": "9", "stops": ["Saharanpur Chowk", "Matawala Bagh", "ISBT", "Geu"] },
+    { "registration": "UK07PA1698", "busNumber": "19", "stops": ["Saharanpur Chowk", "Matawala Bagh", "ISBT", "Geu"] },
+    { "registration": "UA07S2788", "busNumber": "2", "stops": ["Saharanpur Chowk", "Matawala Bagh", "ISBT", "Geu"] },
+    { "registration": "UK07PA2333", "busNumber": "7", "stops": ["Daudwala", "Mathurawala", "Vishnupuram", "Bangali Kothi", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA1690", "busNumber": "10", "stops": ["Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5007", "busNumber": "72", "stops": ["Daudwala", "Mathurawala", "Vishnupuram", "Bangali Kothi", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA5017", "busNumber": "75", "stops": ["Bangali Kothi", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA2191", "busNumber": "6", "stops": ["Ranipokhri", "Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA1811", "busNumber": "14", "stops": ["Ranipokhri", "Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA4992", "busNumber": "65", "stops": ["Ranipokhri", "Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA2623", "busNumber": "34", "stops": ["Ranipokhri", "Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA4738", "busNumber": "57", "stops": ["Ranipokhri", "Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA2341", "busNumber": "5", "stops": ["Ranipokhri", "Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA1791", "busNumber": "27", "stops": ["Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA3346", "busNumber": "39", "stops": ["Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA3345", "busNumber": "40", "stops": ["Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA4117", "busNumber": "49", "stops": ["Doiwala", "Lachiwala", "Kuanwala", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA3344", "busNumber": "38", "stops": ["Gujraunwala", "Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5516", "busNumber": "88", "stops": ["Gujraunwala", "Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5551", "busNumber": "95", "stops": ["Gujraunwala", "Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA4742", "busNumber": "61", "stops": ["Gujraunwala", "Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5020", "busNumber": "78", "stops": ["Gujraunwala", "Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA4995", "busNumber": "66", "stops": ["Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA1695", "busNumber": "12", "stops": ["Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA4171", "busNumber": "55", "stops": ["Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5019", "busNumber": "77", "stops": ["Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA1266", "busNumber": "8", "stops": ["Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA2190", "busNumber": "20", "stops": ["Hathibadkala", "Garhi Cant", "Vijay Coloney", "Chir Bagh", "CM House", "Garhi Cant", "ONGC Chowk", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA1910", "busNumber": "21", "stops": ["Hathibadkala", "Garhi Cant", "Vijay Coloney", "Chir Bagh", "CM House", "Garhi Cant", "ONGC Chowk", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA4998", "busNumber": "69", "stops": ["Garhi Cant", "Vijay Coloney", "Chir Bagh", "CM House", "Garhi Cant", "ONGC Chowk", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5030", "busNumber": "81", "stops": ["Rajender Nagar", "Yamuna Coloney", "Bindal Pul", "Kishan Nagar", "Blood Bank", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5548", "busNumber": "93", "stops": ["Rajender Nagar", "Yamuna Coloney", "Bindal Pul", "Kishan Nagar", "Blood Bank", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5033", "busNumber": "84", "stops": ["Garhi Cant", "Vijay Coloney", "Chir Bagh", "CM House", "Garhi Cant", "ONGC Chowk", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5018", "busNumber": "76", "stops": ["Garhi Cant", "Vijay Coloney", "Chir Bagh", "CM House", "Garhi Cant", "ONGC Chowk", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA2192", "busNumber": "4", "stops": ["Supply", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UA07Q4731", "busNumber": "22", "stops": ["ONGC Chowk", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA0630", "busNumber": "23", "stops": ["ONGC Chowk", "Ballupur Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA3545", "busNumber": "41", "stops": ["IT Park", "Nala Paani Chowk", "Shastdhara Crossing", "Ladpur", "6 No. Pulia", "Fountain Chowk Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA4161", "busNumber": "54", "stops": ["IT Park", "Nala Paani Chowk", "Shastdhara Crossing", "Ladpur", "6 No. Pulia", "Fountain Chowk Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA5031", "busNumber": "82", "stops": ["IT Park", "Nala Paani Chowk", "Shastdhara Crossing", "Ladpur", "6 No. Pulia", "Fountain Chowk Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA4997", "busNumber": "68", "stops": ["IT Park", "Nala Paani Chowk", "Shastdhara Crossing", "Ladpur", "6 No. Pulia", "Fountain Chowk Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA4741", "busNumber": "60", "stops": ["Shastdhara Crossing", "Ladpur", "6 No. Pulia", "Fountain Chowk Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA4999", "busNumber": "70", "stops": ["Raipur Chowk", "Dobhal Chowk", "6 No. Pulia", "Ring Road", "Post Office Nehru Gram", "Jogiwala", "Rispana", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5515", "busNumber": "87", "stops": ["Fountain Chowk", "Nehru Colony", "Rispana", "Kargi", "Geu"] },
+    { "registration": "UK07PA1944", "busNumber": "15", "stops": ["Nakrounda More", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA4778", "busNumber": "62", "stops": ["Nakrounda More", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA3815", "busNumber": "45", "stops": ["Nakrounda More", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA4739", "busNumber": "58", "stops": ["Nakrounda More", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA4121", "busNumber": "52", "stops": ["Nakrounda More", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA4740", "busNumber": "59", "stops": ["Nakrounda More", "Harawala", "Miawala", "Mokampur", "Jogiwala", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA4160", "busNumber": "53", "stops": ["Mokampur", "Jogiwala", "Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA4172", "busNumber": "56", "stops": ["Rispana", "Kargi Chowk", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA3849", "busNumber": "48", "stops": ["Rispana", "Kargi Chowk", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5517", "busNumber": "89", "stops": ["Rispana", "Kargi Chowk", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA4816", "busNumber": "64", "stops": ["Rispana", "Kargi Chowk", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5029", "busNumber": "80", "stops": ["Rispana", "Kargi Chowk", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA5514", "busNumber": "86", "stops": ["Rispana", "Kargi Chowk", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA3814", "busNumber": "44", "stops": ["Naya Gaon Palio", "Badowala", "Telpur", "Mehuwala", "ISBT", "Geu"] },
+    { "registration": "UK07PA2622", "busNumber": "35", "stops": ["Naya Gaon Palio", "Badowala", "Telpur", "Mehuwala", "ISBT", "Geu"] },
+    { "registration": "UK07PA3816", "busNumber": "46", "stops": ["Naya Gaon Palio", "Badowala", "Telpur", "Mehuwala", "ISBT", "Geu"] },
+    { "registration": "UK07PA4119", "busNumber": "51", "stops": ["Naya Gaon Palio", "Badowala", "Telpur", "Mehuwala", "ISBT", "Geu"] },
+    { "registration": "UK07PA5032", "busNumber": "83", "stops": ["Naya Gaon Palio", "Badowala", "Telpur", "Mehuwala", "ISBT", "Geu"] },
+    { "registration": "UK07PA1694", "busNumber": "17", "stops": ["Badowala", "Telpur", "Mehuwala", "ISBT", "Geu"] },
+    { "registration": "UK07PA0858", "busNumber": "13", "stops": ["Race Course", "Dharampur", "Mata Mandir", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA4815", "busNumber": "63", "stops": ["Race Course", "Dharampur", "Mata Mandir", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA3546", "busNumber": "43", "stops": ["Dharampur", "Balbir Road", "Fountain Chowk", "Rispana", "ISBT", "Geu"] },
+    { "registration": "UK07PA5016", "busNumber": "74", "stops": ["Rajpur", "Great Value", "Dilaram Bazar", "Nanni Bakery", "Survey Chowk", "Dwarka Store", "Araghar", "Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA5549", "busNumber": "94", "stops": ["Rajpur", "Great Value", "Dilaram Bazar", "Nanni Bakery", "Survey Chowk", "Dwarka Store", "Araghar", "Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA5553", "busNumber": "96", "stops": ["Rajpur", "Great Value", "Dilaram Bazar", "Nanni Bakery", "Survey Chowk", "Dwarka Store", "Araghar", "Rispana", "Kargi Chowk", "ISBT", "Geu"] },
+    { "registration": "UK07PA2334", "busNumber": "3", "stops": ["Kulhal", "ISBT", "Geu/Gehu"] },
+    { "registration": "UK07PA2621", "busNumber": "36", "stops": ["VikasNagar", "Tehsil", "Harbatpur Chowk", "Langa Road", "Shaspur", "Selaqui", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA3848", "busNumber": "47", "stops": ["VikasNagar", "Tehsil", "Harbatpur Chowk", "Langa Road", "Shaspur", "Selaqui", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA4118", "busNumber": "50", "stops": ["Selaqui Chowk", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5006", "busNumber": "71", "stops": ["Selaqui Chowk", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5015", "busNumber": "73", "stops": ["Selaqui Chowk", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA2584", "busNumber": "33", "stops": ["Selaqui Chowk", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA3348", "busNumber": "37", "stops": ["Selaqui Chowk", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5028", "busNumber": "79", "stops": ["Selaqui Chowk", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5541", "busNumber": "90", "stops": ["Selaqui Chowk", "Sudhowala", "Nanda Ki Chowki", "Premnagar", "Panditwari", "Vasant Vihar", "Baliwala Chowk", "GMS Road", "Geu"] },
+    { "registration": "UK07PA5542", "busNumber": "91", "stops": ["Prem Nagar", "Panditwari", "Balliwalachowk", "GMS Road", "GEU"] },
+    { "registration": "UK07PA5547", "busNumber": "92", "stops": ["Prem Nagar", "Panditwari", "Balliwalachowk", "GMS Road", "GEU"] },
+    { "registration": "UK07PA5512", "busNumber": "85", "stops": ["Prem Nagar", "Panditwari", "Balliwalachowk", "GMS Road", "GEU"] },
+    { "registration": "UK07PA4996", "busNumber": "67", "stops": ["Prem Nagar", "Panditwari", "Balliwalachowk", "GMS Road", "GEU"] }
+  ]
+}

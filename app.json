@@ -1,3 +1,5 @@
+
+
 {
   "expo": {
     "name": "busmate",
@@ -16,13 +18,38 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.priyanshu12345.busmate",
+      
+     
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBE39MT5CfESMYrOCPutmZ5gL3Yf71dT7w"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
-    },
+    },"plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ]
+    ],
     "plugins": [
       "expo-router",
       [
