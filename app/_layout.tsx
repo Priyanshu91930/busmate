@@ -1,19 +1,37 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router'; // 1. Import SplashScreen
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react'; // 2. Import useEffect
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+// 3. Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
+  const [loaded, error] = useFonts({ // Also capture error for debugging
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  // 4. Hide the splash screen once the fonts are loaded (or an error occurs)
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  // 5. Throw the error if loading failed
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  // 6. Do NOT return null. Keep rendering the layout.
+  // The splash screen will cover it until fonts are loaded.
   if (!loaded) {
-    return null;
+    return null; // Or you can return a custom loading component here if you want
   }
 
   return (
