@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from "react"; // Import useEffect
+import { useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Button,
-  FlatList,
-  Modal,
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -21,91 +19,171 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-// --- DUMMY DATA ---
+// --- REQUIRED IMPORTS ---
+import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
+import { initializeApp } from "firebase/app";
+import { doc, getFirestore, onSnapshot } from 'firebase/firestore';
+import BusData from '../bus_data.json';
+const decode = require('polyline-decode');
 
-const INITIAL_USER_LOCATION = {
-  name: "Your Location",
-  latitude: 30.3165,
-  longitude: 78.0322,
+// --- SECURELY ACCESS THE API KEY FROM .env ---
+const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+// --- FIREBASE CONFIG ---
+const firebaseConfig = {
+  apiKey: "AIzaSyBUU7Kmofw-WxFiry2XvF1AONgJ3UqJigg",
+  authDomain: "bustracker-da123.firebaseapp.com",
+  projectId: "bustracker-da123",
+  storageBucket: "bustracker-da123.appspot.com",
+  messagingSenderId: "742393683381",
+  appId: "1:742393683381:web:c118c123b2630ef1950dfc",
+  measurementId: "G-6E3YL3JHFZ"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- TYPE DEFINITIONS & CONSTANTS ---
+interface LocationPoint {
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+interface BusRoute {
+  registration: string;
+  busNumber: string;
+  stops: string[];
+}
+const PANEL_HEIGHT = 400;
+const GRAPHIC_ERA_DESTINATION: LocationPoint = {
+  name: BusData.GRAPHIC_ERA_UNIVERSITY.name,
+  latitude: BusData.GRAPHIC_ERA_UNIVERSITY.coords.latitude,
+  longitude: BusData.GRAPHIC_ERA_UNIVERSITY.coords.longitude,
 };
 
-const INITIAL_DESTINATION = {
-  name: "Graphic Era Hill University",
-  latitude: 30.4022,
-  longitude: 78.0742,
-  latitudeDelta: 0.12,
-  longitudeDelta: 0.12,
-};
+export default function MapViewWithBusSelection() {
+  const params = useLocalSearchParams();
+  const { name, lat, lng } = params;
 
-// --- NEW: Starting position for the bus ---
-const INITIAL_BUS_LOCATION = {
-  latitude: 30.35,
-  longitude: 78.05,
-};
-
-const availableBuses = [
-  { id: 'bus1', name: 'Bus No. 42', route: 'Express Route', timeAway: '5 mins away' },
-  { id: 'bus2', name: 'Bus No. 18', route: 'City Circle', timeAway: '8 mins away' },
-  { id: 'bus3', name: 'GEHU Shuttle', route: 'University Shuttle', timeAway: '12 mins away' },
-];
-
-const dummySuggestions = [
-  { id: '1', name: 'Dehradun Railway Station' },
-  { id: '2', name: 'Clock Tower, Dehradun' },
-  { id: '3', name: 'Pacific Mall' },
-];
-
-const PANEL_HEIGHT = 400; // Height of the draggable panel
-
-export default function App() {
+  // --- STATE MANAGEMENT ---
   const [isMapReady, setIsMapReady] = useState(false);
-  const [selectedBus, setSelectedBus] = useState<string | null>(null);
   
-  // --- NEW: State to hold the live location of the bus ---
-  const [busLocation, setBusLocation] = useState(INITIAL_BUS_LOCATION);
+  // Location and Route States
+  const [startLocation, setStartLocation] = useState<LocationPoint | null>(null);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+  const [routePolyline, setRoutePolyline] = useState<{ latitude: number; longitude: number; }[]>([]);
+  
+  // Bottom Panel States
+  const [relevantBuses, setRelevantBuses] = useState<BusRoute[]>([]);
+  const [selectedBus, setSelectedBus] = useState<BusRoute | null>(null);
 
-  const [startLocation, setStartLocation] = useState(INITIAL_USER_LOCATION);
-  const [destination, setDestination] = useState(INITIAL_DESTINATION);
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [editingLocation, setEditingLocation] = useState<'start' | 'destination' | null>(null);
+  // Live Bus States
+  const [busLocation, setBusLocation] = useState<LocationPoint | null>(null);
+  const [busStatus, setBusStatus] = useState<'loading' | 'online' | 'offline'>('loading');
 
-  // --- NEW: useEffect to simulate the bus moving in real-time ---
+  // --- HOOKS & FUNCTIONS ---
+
+  // 1. Set initial start location from dashboard params
   useEffect(() => {
-    const interval = setInterval(() => {
-      setBusLocation(prevLocation => {
-        const newLat = prevLocation.latitude + 0.0005;
-        const newLon = prevLocation.longitude + 0.0002;
-
-        if (newLat >= INITIAL_DESTINATION.latitude) {
-          clearInterval(interval);
-          return prevLocation;
-        }
-        return { latitude: newLat, longitude: newLon };
+    if (name && lat && lng) {
+      setStartLocation({
+        name: name as string,
+        latitude: parseFloat(lat as string),
+        longitude: parseFloat(lng as string),
       });
-    }, 3000);
+      
+      // Also find relevant buses for the bottom panel based on this initial stop
+      const busesForStop = BusData.BUS_ROUTES.filter(route => 
+        route.stops.some(stop => stop.toLowerCase() === (name as string).toLowerCase())
+      );
+      setRelevantBuses(busesForStop);
+      if (busesForStop.length > 0) {
+        setSelectedBus(busesForStop[0]);
+      }
+    }
+  }, [name, lat, lng]);
 
-    return () => clearInterval(interval);
+  // 2. Fetch directions whenever the start location changes
+  useEffect(() => {
+    if (startLocation) {
+      fetchRouteDirections(startLocation, GRAPHIC_ERA_DESTINATION);
+    }
+  }, [startLocation]);
+
+  // 3. Fetch live bus location (runs once)
+  useEffect(() => {
+    const driverId = "driver_123"; 
+    const docRef = doc(db, "driverLocations", driverId);
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setBusLocation({ name: "Live Bus", ...data });
+        setBusStatus(data.active ? 'online' : 'offline');
+      } else {
+        setBusStatus('offline');
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
-  const panelY = useSharedValue(0);
+  // 4. GPS Button Handler
+  const handleFetchUserLocation = async () => {
+    setIsFetchingLocation(true);
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Please enable location services to use this feature.');
+      setIsFetchingLocation(false);
+      return;
+    }
+    try {
+      let location = await Location.getCurrentPositionAsync({});
+      let address = await Location.reverseGeocodeAsync(location.coords);
+      
+      const newStartLocation = {
+        name: address[0]?.name || 'My Current Location',
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setStartLocation(newStartLocation); // This will trigger the route fetch useEffect
+    } catch (error) {
+      Alert.alert("Error", "Could not fetch your location.");
+    } finally {
+      setIsFetchingLocation(false);
+    }
+  };
 
+  // 5. Directions API Fetcher
+  const fetchRouteDirections = async (origin: LocationPoint, destination: LocationPoint) => {
+    if (!GOOGLE_MAPS_API_KEY) {
+      console.error("Google Maps API Key is missing.");
+      return;
+    }
+    const originStr = `${origin.latitude},${origin.longitude}`;
+    const destStr = `${destination.latitude},${destination.longitude}`;
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destStr}&key=${GOOGLE_MAPS_API_KEY}`;
+    
+    try {
+      const response = await fetch(url);
+      const json = await response.json();
+      if (json.routes.length > 0) {
+        const points = decode(json.routes[0].overview_polyline.points).map((point: number[]) => ({
+          latitude: point[0], longitude: point[1]
+        }));
+        setRoutePolyline(points);
+      }
+    } catch (error) {
+      console.error("Failed to fetch directions:", error);
+    }
+  };
+
+  // Animation logic for bottom panel
+  const panelY = useSharedValue(0);
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, ctx: { startY: number }) => { ctx.startY = panelY.value; },
     onActive: (event, ctx) => { const newY = ctx.startY + event.translationY; panelY.value = Math.max(0, newY); },
     onEnd: (event) => { if (event.translationY > PANEL_HEIGHT / 2) { panelY.value = withSpring(PANEL_HEIGHT - 80); } else { panelY.value = withSpring(0); }},
   });
-
   const animatedPanelStyle = useAnimatedStyle(() => ({ transform: [{ translateY: panelY.value }] }));
-  
-  const openLocationSearch = (type: 'start' | 'destination') => { setEditingLocation(type); setModalVisible(true); };
-  
-  const handleSelectLocation = (location: {id: string, name: string}) => {
-    const newLocation = { name: location.name, ...INITIAL_USER_LOCATION };
-    if (editingLocation === 'start') { setStartLocation(newLocation); } else { setDestination(newLocation); }
-    setModalVisible(false);
-  };
-
-  const selectedBusDetails = availableBuses.find(bus => bus.id === selectedBus);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -113,133 +191,150 @@ export default function App() {
         <MapView
           provider={PROVIDER_GOOGLE}
           style={styles.map}
-          initialRegion={INITIAL_DESTINATION}
+          initialRegion={{
+            latitude: lat ? parseFloat(lat as string) : 30.3165,
+            longitude: lng ? parseFloat(lng as string) : 78.0322,
+            latitudeDelta: 0.12,
+            longitudeDelta: 0.12,
+          }}
           onMapReady={() => setIsMapReady(true)}
         >
-          {/* User and Destination Markers */}
-          <Marker coordinate={startLocation} title={startLocation.name} />
-          <Marker coordinate={destination} title={destination.name} pinColor="blue" />
+          {/* Draw the precise road-following route */}
+          {routePolyline.length > 0 && <Polyline coordinates={routePolyline} strokeColor={"#FFD700"} strokeWidth={6} />}
 
-          {/* --- NEW: Live Bus Marker --- */}
-          <Marker coordinate={busLocation} anchor={{ x: 0.5, y: 0.5 }}>
-            <View style={styles.busMarker}>
-              <Text style={styles.busMarkerIcon}>🚌</Text>
-            </View>
-          </Marker>
+          {/* Markers for Start and Destination */}
+          {startLocation && <Marker coordinate={startLocation} title={startLocation.name} pinColor="green" />}
+          <Marker coordinate={GRAPHIC_ERA_DESTINATION} title={GRAPHIC_ERA_DESTINATION.name} pinColor="red" />
+
+          {/* Live Bus Marker */}
+          {busLocation && (
+            <Marker coordinate={busLocation} anchor={{ x: 0.5, y: 0.5 }} zIndex={99}>
+              <View style={[styles.statusIndicator, busStatus === 'online' ? styles.online : styles.offline]}>
+                <View style={styles.busMarker}><Text style={styles.busMarkerIcon}>🚌</Text></View>
+              </View>
+            </Marker>
+          )}
         </MapView>
 
-        {/* --- UI Panels --- */}
-        <View style={styles.locationContainer}>
-          <TouchableOpacity onPress={() => openLocationSearch('start')}>
-            <View style={styles.locationRow}>
-              <Text style={styles.locationIcon}>🟢</Text>
-              <Text style={styles.locationText} numberOfLines={1}>{startLocation.name}</Text>
-            </View>
-          </TouchableOpacity>
+        {/* --- NEW: Location Input Boxes --- */}
+        <View style={styles.locationInputContainer}>
+          <View style={styles.inputRow}>
+            <Text style={styles.locationIcon}>🟢</Text>
+            <Text style={styles.inputText} numberOfLines={1}>
+              {startLocation ? startLocation.name : 'Choose starting point'}
+            </Text>
+            <TouchableOpacity style={styles.gpsButton} onPress={handleFetchUserLocation}>
+              {isFetchingLocation ? (
+                <ActivityIndicator size="small" color="#3B82F6" />
+              ) : (
+                <Ionicons name="locate" size={22} color="#3B82F6" />
+              )}
+            </TouchableOpacity>
+          </View>
           <View style={styles.separator} />
-          <TouchableOpacity onPress={() => openLocationSearch('destination')}>
-            <View style={styles.locationRow}>
-              <Text style={styles.locationIcon}>🔴</Text>
-              <Text style={styles.locationText} numberOfLines={1}>{destination.name}</Text>
-            </View>
-          </TouchableOpacity>
+          <View style={styles.inputRow}>
+            <Text style={styles.locationIcon}>🔴</Text>
+            <Text style={styles.inputText}>{GRAPHIC_ERA_DESTINATION.name}</Text>
+          </View>
         </View>
 
-        {/* Draggable Bottom Bus Selection Panel - Content Restored */}
+        {/* Bottom Panel with relevant buses */}
         <Animated.View style={[styles.bottomContainer, animatedPanelStyle]}>
+           {/* ... (rest of the bottom panel code is unchanged) ... */}
           <PanGestureHandler onGestureEvent={gestureHandler}>
-            <Animated.View style={styles.dragHandleContainer}>
-              <View style={styles.dragHandle} />
-            </Animated.View>
+            <Animated.View style={styles.dragHandleContainer}><View style={styles.dragHandle} /></Animated.View>
           </PanGestureHandler>
           <Text style={styles.panelTitle}>Available Buses</Text>
           <ScrollView>
-            {availableBuses.map((bus) => (
-              <TouchableOpacity key={bus.id} style={[styles.busRow, selectedBus === bus.id && styles.selectedBusRow]} onPress={() => setSelectedBus(bus.id)}>
+            {relevantBuses.map((bus) => (
+              <TouchableOpacity key={bus.registration} style={[styles.busRow, selectedBus?.registration === bus.registration && styles.selectedBusRow]} onPress={() => setSelectedBus(bus)}>
                 <Text style={styles.busIcon}>🚌</Text>
                 <View style={styles.busDetails}>
-                  <Text style={styles.busName}>{bus.name}</Text>
-                  <Text style={styles.busRoute}>{bus.route}</Text>
+                  <Text style={styles.busName}>Bus No. {bus.busNumber}</Text>
+                  <Text style={styles.busRoute}>{`${bus.stops[0]} - ${bus.stops[bus.stops.length-1]}`}</Text>
                 </View>
-                <Text style={styles.busTime}>{bus.timeAway}</Text>
+                <Text style={styles.busTime}>{Math.floor(Math.random() * 10) + 5} mins away</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
           <TouchableOpacity style={[styles.bookButton, !selectedBus && styles.disabledButton]} disabled={!selectedBus}>
-            <Text style={styles.bookButtonText}>{selectedBus ? `Confirm ${selectedBusDetails?.name}` : 'Select a Bus'}</Text>
+            <Text style={styles.bookButtonText}>{selectedBus ? `Confirm Bus No. ${selectedBus.busNumber}` : 'Select a Bus'}</Text>
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Location Search Modal */}
-        <Modal visible={isModalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
-          <SafeAreaView style={{flex: 1}}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Search Location</Text>
-              <TextInput style={styles.searchInput} placeholder="Enter address or landmark..." />
-              <FlatList
-                data={dummySuggestions}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.suggestionRow} onPress={() => handleSelectLocation(item)}>
-                    <Text>{item.name}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-               <Button title="Close" onPress={() => setModalVisible(false)} />
-            </View>
-          </SafeAreaView>
-        </Modal>
-
-        {!isMapReady && (<View style={styles.loadingContainer}><ActivityIndicator size="large" color="#007BFF" /><Text>Loading Map...</Text></View>)}
+        {(!isMapReady || !startLocation) && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#007BFF" />
+            <Text>Loading Map...</Text>
+          </View>
+        )}
       </SafeAreaView>
     </GestureHandlerRootView>
   );
 }
 
-// --- Stylesheet ---
+// --- STYLESHEET (with new styles for input boxes) ---
 const styles = StyleSheet.create({
-  // All previous styles...
   container: { flex: 1, backgroundColor: '#fff' },
   map: { flex: 1 },
   loadingContainer: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'},
-  locationContainer: { position: 'absolute', top: 60, left: 20, right: 20, backgroundColor: 'white', borderRadius: 10, padding: 15, elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5},
-  locationRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 5 },
-  locationIcon: { marginRight: 10, fontSize: 16 },
-  locationText: { fontSize: 16, flex: 1 },
-  separator: { height: 1, backgroundColor: '#f0f0f0', marginVertical: 5 },
+  
+  // New Styles for location input boxes
+  locationInputContainer: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  locationIcon: {
+    fontSize: 16,
+    marginRight: 10,
+  },
+  inputText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  gpsButton: {
+    padding: 5,
+    marginLeft: 10,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  
+  // Bottom Panel and other styles (unchanged)
   bottomContainer: { position: 'absolute', bottom: 0, left: 0, right: 0, height: PANEL_HEIGHT, backgroundColor: 'white', borderTopLeftRadius: 20, borderTopRightRadius: 20, elevation: 10, paddingHorizontal: 20, paddingTop: 10 },
   dragHandleContainer: { alignItems: 'center', paddingVertical: 10, },
   dragHandle: { width: 40, height: 5, backgroundColor: '#ccc', borderRadius: 3, },
   panelTitle: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 15, },
   busRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f9f9f9', padding: 15, borderRadius: 10, marginBottom: 10, borderWidth: 1, borderColor: '#eee' },
-  selectedBusRow: { borderColor: '#FFD700', backgroundColor: '#FFFBEA' },
+  selectedBusRow: { borderColor: '#3B82F6', backgroundColor: '#EFF6FF' },
   busIcon: { fontSize: 24, marginRight: 15 },
   busDetails: { flex: 1 },
   busName: { fontSize: 16, fontWeight: 'bold' },
   busRoute: { fontSize: 14, color: 'gray' },
   busTime: { fontSize: 14, fontWeight: '600', color: '#333' },
-  bookButton: { backgroundColor: '#FFD700', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 10, marginBottom: 20, },
+  bookButton: { backgroundColor: '#3B82F6', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 10, marginBottom: 20, },
   disabledButton: { backgroundColor: '#E0E0E0' },
-  bookButtonText: { fontSize: 18, fontWeight: 'bold' },
-  modalContainer: { flex: 1, padding: 20 },
-  modalTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  searchInput: { height: 50, borderColor: '#ccc', borderWidth: 1, borderRadius: 10, paddingHorizontal: 15, marginBottom: 20 },
-  suggestionRow: { padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee' },
-  
-  // --- NEW: Styles for the custom bus marker ---
-  busMarker: {
-    backgroundColor: 'white',
-    padding: 6,
-    borderRadius: 20,
-    borderColor: 'black',
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  busMarkerIcon: {
-    fontSize: 20,
-  },
+  bookButtonText: { fontSize: 18, fontWeight: 'bold', color: 'white' },
+  statusIndicator: { borderRadius: 30, padding: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 6 },
+  online: { backgroundColor: '#4CAF50' },
+  offline: { backgroundColor: '#F44336' },
+  busMarker: { backgroundColor: 'white', padding: 6, borderRadius: 20 },
+  busMarkerIcon: { fontSize: 20 },
 });

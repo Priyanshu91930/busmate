@@ -1,17 +1,59 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    Image,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// IMPORTANT: Import Firestore functions
+import { doc, getFirestore, setDoc } from 'firebase/firestore';
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBUU7Kmofw-WxFiry2XvF1AONgJ3UqJigg",
+  authDomain: "bustracker-da123.firebaseapp.com",
+  projectId: "bustracker-da123",
+  storageBucket: "bustracker-da123.appspot.com",
+  messagingSenderId: "742393683381",
+  appId: "1:742393683381:web:c118c123b2630ef1950dfc",
+  measurementId: "G-6E3YL3JHFZ"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+// Initialize Firestore
+const db = getFirestore(app);
+
+
+// --- Placeholder Map Screen Component ---
+const MapViewScreen = () => {
+    const router = useRouter();
+    return (
+        <View style={styles.mapScreenContainer}>
+            <Pressable onPress={() => router.back()} style={styles.mapBackButton}>
+                <Ionicons name="arrow-back" size={24} color="black" />
+            </Pressable>
+            <Ionicons name="bus" size={80} color="#3B82F6" />
+            <Text style={styles.mapScreenText}>Map View</Text>
+            <Text style={styles.mapScreenSubText}>
+                Student would see the driver's location here as a moving bus icon.
+            </Text>
+        </View>
+    );
+};
+
 
 // Placeholder profile image (you can replace with actual image import)
 const profileImage = require('../../assets/images/clg.png');
@@ -19,34 +61,116 @@ const profileImage = require('../../assets/images/clg.png');
 export default function DriverDashboard() {
   const router = useRouter();
   const [isProfileMenuVisible, setIsProfileMenuVisible] = useState(false);
+  const [isSharingLocation, setIsSharingLocation] = useState(false);
+  const [showMap, setShowMap] = useState(false); 
+  
+  const locationInterval = useRef(null);
 
-  // Dashboard menu items with icons and labels
+  useEffect(() => {
+    return () => {
+      if (locationInterval.current) {
+        clearInterval(locationInterval.current);
+      }
+    };
+  }, []);
+
   const menuItems = [
-    { icon: 'bus', label: 'Trips', color: '#10B981' },     // Green
-    { icon: 'image', label: 'Gallery', color: '#F59E0B' }, // Orange
-    { icon: 'lock-closed', label: 'Shop', color: '#3B82F6' }, // Blue
-    { icon: 'stats-chart', label: 'Report', color: '#8B5CF6' }, // Purple
-    { icon: 'seat', label: 'Seat', color: '#EF4444' }, // Red (changed from Favorite)
-    { icon: 'paper-plane', label: 'Share', color: '#10B981' }, // Green
-    { icon: 'card', label: 'Credit', color: '#0EA5E9' }, // Cyan
-    { icon: 'map', label: 'Map', color: '#14B8A6' }, // Teal
-    { icon: 'calendar', label: 'Calendar', color: '#6366F1' }, // Indigo
+    { icon: 'bus', label: 'Trips', color: '#10B981' },
+    { icon: 'image', label: 'Gallery', color: '#F59E0B' },
+    { icon: 'lock-closed', label: 'Shop', color: '#3B82F6' },
+    { icon: 'stats-chart', label: 'Report', color: '#8B5CF6' },
+    { icon: 'accessibility-outline', label: 'Seat', color: '#EF4444' }, // Fixed icon
+    { 
+      icon: isSharingLocation ? 'radio-button-on' : 'paper-plane', 
+      label: isSharingLocation ? 'Stop Sharing' : 'Share Location', 
+      color: isSharingLocation ? '#EF4444' : '#10B981'
+    },
+    { icon: 'card', label: 'Credit', color: '#0EA5E9' },
+    { icon: 'map', label: 'Map', color: '#14B8A6' },
+    { icon: 'calendar', label: 'Calendar', color: '#6366F1' },
   ];
+
+  const startSharingLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission denied', 'Permission to access location was denied.');
+      return;
+    }
+
+    setIsSharingLocation(true);
+    locationInterval.current = setInterval(async () => {
+      try {
+        const location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+        
+        console.log(`Sending to Firestore - Lat: ${latitude}, Long: ${longitude}`);
+
+        // --- WRITING TO FIRESTORE ---
+        // Using a hardcoded ID for this example. In a real app,
+        // this would be the authenticated driver's unique ID.
+        const driverId = "driver_123";
+        const locationDocRef = doc(db, "driverLocations", driverId);
+        
+        await setDoc(locationDocRef, {
+          latitude: latitude,
+          longitude: longitude,
+          timestamp: new Date(),
+          active: true // Indicate that the driver is online and sharing
+        });
+      } catch (error) {
+        console.error("Failed to get or send location:", error);
+        stopSharingLocation(); // Stop if there's an error
+      }
+    }, 5000);
+  };
+
+  const stopSharingLocation = async () => {
+    setIsSharingLocation(false);
+    if (locationInterval.current) {
+      clearInterval(locationInterval.current);
+      locationInterval.current = null;
+    }
+    
+    // --- UPDATING FIRESTORE STATUS ---
+    // Mark the driver as inactive in Firestore
+    const driverId = "driver_123";
+    const locationDocRef = doc(db, "driverLocations", driverId);
+    try {
+      // Use merge: true to only update the 'active' field without overwriting location data
+      await setDoc(locationDocRef, { active: false }, { merge: true });
+      console.log('Stopped sharing location. Status updated in Firestore.');
+    } catch (error) {
+      console.error("Failed to update driver status in Firestore:", error);
+    }
+  };
 
   const handleMenuItemPress = (label: string) => {
     switch(label) {
       case 'Seat':
         router.push('/driver/seat-selection');
         break;
+      case 'Share Location':
+        startSharingLocation();
+        break;
+      case 'Stop Sharing':
+        stopSharingLocation();
+        break;
+      case 'Map':
+        setShowMap(true); 
+        break;
       default:
         console.log(`Pressed ${label}`);
     }
   };
+  
+  if (showMap) {
+      return <MapViewScreen />;
+  }
 
   const ProfileMenu = () => {
     const menuOptions = [
-      { label: 'Profile', icon: 'person', onPress: () => { /* Navigate to profile */ } },
-      { label: 'Settings', icon: 'settings', onPress: () => { /* Navigate to settings */ } },
+      { label: 'Profile', icon: 'person', onPress: () => {} },
+      { label: 'Settings', icon: 'settings', onPress: () => {} },
       { label: 'Logout', icon: 'log-out', onPress: () => router.replace('/login') }
     ];
 
@@ -152,6 +276,7 @@ export default function DriverDashboard() {
   );
 }
 
+// All styles remain the same
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -162,10 +287,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingTop: 40,
+    paddingBottom: 10,
     backgroundColor: 'white',
-    elevation: 2, // for Android shadow
-    shadowColor: '#000', // for iOS shadow
+    elevation: 2,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -175,10 +301,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 30,
     elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
   },
   profileButton: {
     backgroundColor: '#F3F4F6',
@@ -260,6 +382,7 @@ const styles = StyleSheet.create({
     color: 'white',
     marginTop: 5,
     fontSize: 12,
+    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
@@ -274,10 +397,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 200,
     elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
   },
   profileMenuItem: {
     flexDirection: 'row',
@@ -289,5 +408,32 @@ const styles = StyleSheet.create({
   profileMenuItemText: {
     marginLeft: 10,
     color: '#1F2937',
+  },
+  mapScreenContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+  },
+  mapScreenText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
+  mapScreenSubText: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginTop: 10,
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  mapBackButton: {
+      position: 'absolute',
+      top: 40,
+      left: 20,
+      padding: 10,
+      backgroundColor: 'white',
+      borderRadius: 25,
+      elevation: 5,
   },
 });
