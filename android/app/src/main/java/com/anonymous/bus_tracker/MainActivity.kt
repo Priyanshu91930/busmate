@@ -1,4 +1,4 @@
-package com.priyanshu12345.busmate
+package com.anonymous.bus_tracker
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

@@ -16,23 +16,11 @@ import {
 } from 'react-native';
 
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// IMPORTANT: Import Firestore functions
 import { doc, getFirestore, setDoc } from 'firebase/firestore';
+import { getApp } from 'firebase/app';
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBUU7Kmofw-WxFiry2XvF1AONgJ3UqJigg",
-  authDomain: "bustracker-da123.firebaseapp.com",
-  projectId: "bustracker-da123",
-  storageBucket: "bustracker-da123.appspot.com",
-  messagingSenderId: "742393683381",
-  appId: "1:742393683381:web:c118c123b2630ef1950dfc",
-  measurementId: "G-6E3YL3JHFZ"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Get the centralized Firebase app instance
+const app = getApp();
 // Initialize Firestore
 const db = getFirestore(app);
 

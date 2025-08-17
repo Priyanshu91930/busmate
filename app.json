@@ -19,10 +19,12 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.priyanshu12345.busmate",
-      
-     
+      "package": "com.anonymous.bus_tracker",
+      "googleServicesFile": "./google-services.json",
       "config": {
+        "googleSignIn": {
+          "certificateHash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+        },
         "googleMaps": {
           "apiKey": "AIzaSyBE39MT5CfESMYrOCPutmZ5gL3Yf71dT7w"
         }
@@ -32,7 +34,8 @@
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
-    },"plugins": [
+    },
+    "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
@@ -44,21 +47,15 @@
         }
       ],
       [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.742393683381-p1ruuvbbrhoq41hrb0bngbuv2bo6ef3q"
+        }
+      ],
+      [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
-        }
-      ]
-    ],
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
         }
       ]
     ],
