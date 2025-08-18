@@ -238,6 +238,17 @@ export default function MapViewWithBusSelection() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
+        {/* New Header Component */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Bus Route</Text>
+          <TouchableOpacity style={styles.notificationIcon}>
+            <Ionicons name="notifications-outline" size={24} color="#333" />
+            <View style={styles.notificationBadge}>
+              <Text style={styles.notificationBadgeText}>3</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
         <MapView
           provider={PROVIDER_GOOGLE}
           style={styles.map}
@@ -269,8 +280,8 @@ export default function MapViewWithBusSelection() {
           )}
         </MapView>
         
-        {/* Your UI remains unchanged */}
-        <View style={styles.locationInputContainer}>
+        {/* Adjust locationInputContainer top position to account for new header */}
+        <View style={[styles.locationInputContainer, { top: 110 }]}>
           <View style={styles.inputRow}>
             <Text style={styles.locationIcon}>🟢</Text>
             <Text style={styles.inputText} numberOfLines={1}>
@@ -352,5 +363,46 @@ const styles = StyleSheet.create({
     offline: { backgroundColor: '#F44336' },
     busMarker: { backgroundColor: 'white', padding: 6, borderRadius: 20 },
     busMarkerIcon: { fontSize: 20 },
-    noBusText: { textAlign: 'center', color: 'gray', marginTop: 20, fontSize: 16 }
+    noBusText: { textAlign: 'center', color: 'gray', marginTop: 20, fontSize: 16 },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingTop: 30, // Reduced top padding
+      paddingBottom: 10,
+      backgroundColor: 'white',
+      borderBottomWidth: 1,
+      borderBottomColor: '#f0f0f0',
+      elevation: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 5,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#333',
+    },
+    notificationIcon: {
+      position: 'relative',
+    },
+    notificationBadge: {
+      position: 'absolute',
+      top: -5,
+      right: -5,
+      backgroundColor: '#FF4444',
+      borderRadius: 10,
+      width: 20,
+      height: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1,
+    },
+    notificationBadgeText: {
+      color: 'white',
+      fontSize: 12,
+      fontWeight: 'bold',
+    },
 });

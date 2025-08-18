@@ -8,7 +8,8 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
+  TouchableOpacity
 } from 'react-native';
 
 // --- Step 1: Import the full bus data from your JSON file ---
@@ -100,7 +101,12 @@ export default function StudentDashboard() {
           <Ionicons name="arrow-back" size={24} color="black" />
         </Pressable>
         <Text style={styles.headerTitle}>Find Your Bus Route</Text>
-        <View style={styles.profileButton}><Text style={styles.profileButtonText}>P</Text></View>
+        <TouchableOpacity style={styles.notificationIcon}>
+          <Ionicons name="notifications-outline" size={24} color="#333" />
+          <View style={styles.notificationBadge}>
+            <Text style={styles.notificationBadgeText}>3</Text>
+          </View>
+        </TouchableOpacity>
       </View>
 
       {/* Search Bar */}
@@ -137,7 +143,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     alignItems: 'center', 
     paddingHorizontal: 15, 
-    paddingVertical: 10,
+    paddingTop: 30,
+    paddingBottom: 10,
     backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB'
@@ -210,5 +217,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6B7280', // Gray color for secondary info
     marginTop: 4,
+  },
+  notificationIcon: {
+    position: 'relative',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: '#FF6B6B',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  notificationBadgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
