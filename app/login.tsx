@@ -214,30 +214,6 @@ export default function LoginScreen() {
           <Text style={styles.buttonText}>Sign in as Student</Text>
         </Pressable>
       </View>
-
-      {/* Debug Section - Remove in production */}
-      <View style={styles.debugContainer}>
-        <Text style={styles.debugText}>
-          Web Client ID: {GOOGLE_CONFIG.WEB_CLIENT_ID ? `${GOOGLE_CONFIG.WEB_CLIENT_ID.substring(0, 20)}...` : 'NOT SET'}
-        </Text>
-        <Text style={styles.debugText}>
-          Firebase Project: {process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || 'NOT SET'}
-        </Text>
-        <Text style={styles.debugText}>
-          Config Status: {configStatus}
-        </Text>
-        
-        {/* Temporary bypass for testing */}
-        <Pressable 
-          style={[styles.debugButton]} 
-          onPress={() => {
-            console.log('🚀 Bypass button pressed - testing navigation');
-            Alert.alert('Bypass', 'This will test navigation. Remove in production.');
-          }}
-        >
-          <Text style={styles.debugButtonText}>🚀 TEST Navigation</Text>
-        </Pressable>
-      </View>
     </View>
   );
 }
@@ -301,23 +277,22 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 10,
     backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    alignSelf: 'flex-start',
+    borderRadius: 5,
   },
   debugText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 5,
   },
   debugButton: {
+    backgroundColor: '#ffcc00',
+    padding: 10,
+    borderRadius: 5,
     marginTop: 10,
-    backgroundColor: '#4285F4', // Google blue color
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
   },
   debugButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
+    color: 'black',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
