@@ -1,53 +1,106 @@
 # BusMate: Smart Campus Bus Tracking Application
 
-<div style="display: flex; align-items: center;">
-  <img width="200" height="500" alt="Screenshot_1755542288" src="https://github.com/user-attachments/assets/cb4a5cca-fc17-466f-ad2d-e1e575e0c865" />
-  <p>
-    ## 🚌 Project Overview  
-    BusMate is an innovative mobile application designed to simplify campus transportation  
-    by providing real-time bus tracking, route information, and seamless navigation  
-    for students and drivers.
-  </p>
-</div>
+<table>
+<tr>
+  <td>
+    <img width="200" height="500" alt="Screenshot_1755542288" src="https://github.com/user-attachments/assets/cb4a5cca-fc17-466f-ad2d-e1e575e0c865" />
+  </td>
+  <td>
+    
+  ## 🚌 Project Overview  
+  BusMate is an innovative mobile application designed to simplify campus transportation  
+  by providing real-time bus tracking, route information, and seamless navigation  
+  for students and drivers.
+  </td>
+</tr>
+</table>
 
 ---
 
 ## 🌟 Key Features
 
 ### 🔑 Google Authentication
-<img width="200" height="500" alt="Screenshot_1755542386" src="https://github.com/user-attachments/assets/2255b2c4-cc0a-4fea-9bfd-36c3c7016e5c" />
-<img width="200" height="500" alt="Screenshot_1755542400" src="https://github.com/user-attachments/assets/a1e69151-6050-48aa-b56d-5a8e78db6434" />
-<img width="200" height="500" alt="Screenshot_1755542408" src="https://github.com/user-attachments/assets/0e4d5763-2770-4c05-837e-4d6b12235b18" />
+<table>
+<tr>
+  <td>
+    <img width="200" height="500" alt="Screenshot_1755542386" src="https://github.com/user-attachments/assets/2255b2c4-cc0a-4fea-9bfd-36c3c7016e5c" />
+  </td>
+  <td>
+    Login quickly and securely with Google Authentication.  
+    Smooth onboarding experience for students and drivers.  
+  </td>
+</tr>
+<tr>
+  <td>
+    <img width="200" height="500" alt="Screenshot_1755542400" src="https://github.com/user-attachments/assets/a1e69151-6050-48aa-b56d-5a8e78db6434" />
+  </td>
+  <td>
+    Session management and persistent login across devices.  
+  </td>
+</tr>
+<tr>
+  <td>
+    <img width="200" height="500" alt="Screenshot_1755542408" src="https://github.com/user-attachments/assets/0e4d5763-2770-4c05-837e-4d6b12235b18" />
+  </td>
+  <td>
+    Secure integration with Firebase Authentication.  
+  </td>
+</tr>
+</table>
 
 ---
 
 ### 👩‍🎓 Student Features
-- **Interactive Bus Route Map**
-  - Real-time bus location tracking
-  - Route visualization with Google Maps integration
-  - Stop information and bus availability  
-
-  <img width="200" height="500" alt="Screenshot_1755542330" src="https://github.com/user-attachments/assets/38f42b0c-1f6d-4a65-a789-802da6e82617" />
-
-- **Dashboard**
-  - Search and filter bus stops
-  - View available buses for each stop
-  - Quick route selection  
-
-  <img width="200" height="500" alt="Screenshot_1755542289" src="https://github.com/user-attachments/assets/8ae14021-e053-4a42-80ea-78e2607c707e" />
-  <img width="200" height="500" alt="Screenshot_1755542315" src="https://github.com/user-attachments/assets/7a178b56-6516-4b33-bd52-b2bb058979da" />
+<table>
+<tr>
+  <td>
+    <img width="200" height="500" alt="Screenshot_1755542330" src="https://github.com/user-attachments/assets/38f42b0c-1f6d-4a65-a789-802da6e82617" />
+  </td>
+  <td>
+    **Interactive Bus Route Map**  
+    - Real-time bus location tracking  
+    - Route visualization with Google Maps integration  
+    - Stop information and bus availability  
+  </td>
+</tr>
+<tr>
+  <td>
+    <img width="200" height="500" alt="Screenshot_1755542289" src="https://github.com/user-attachments/assets/8ae14021-e053-4a42-80ea-78e2607c707e" />
+  </td>
+  <td>
+    **Dashboard**  
+    - Search and filter bus stops  
+    - View available buses for each stop  
+    - Quick route selection  
+  </td>
+</tr>
+<tr>
+  <td>
+    <img width="200" height="500" alt="Screenshot_1755542315" src="https://github.com/user-attachments/assets/7a178b56-6516-4b33-bd52-b2bb058979da" />
+  </td>
+  <td>
+    Easy navigation with real-time updates.  
+  </td>
+</tr>
+</table>
 
 ---
 
 ### 👨‍✈️ Driver Features
-- **Location Sharing**
-  - Real-time GPS location updates
-  - Bus status management (online/offline)
-  - Route tracking and management  
+<table>
+<tr>
+  <td>
+    <img width="200" height="500" alt="Screenshot_1755347864" src="https://github.com/user-attachments/assets/648a7fe8-faf3-4dd4-ab4f-0b978b5ab9ed" />
+  </td>
+  <td>
+    **Location Sharing**  
+    - Real-time GPS location updates  
+    - Bus status management (online/offline)  
+    - Route tracking and management  
+  </td>
+</tr>
+</table>
 
-  <img width="200" height="500" alt="Screenshot_1755347864" src="https://github.com/user-attachments/assets/648a7fe8-faf3-4dd4-ab4f-0b978b5ab9ed" />
-
----
 
 ## 🔧 Technical Architecture
 
