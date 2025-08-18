@@ -1,8 +1,8 @@
 # BusMate: Smart Campus Bus Tracking Application
-<img width="200" height="500" alt="Screenshot_1755542288" src="https://github.com/user-attachments/assets/cb4a5cca-fc17-466f-ad2d-e1e575e0c865" />
-
-## 🚌 Project Overview
+<img width="200" height="500" alt="Screenshot_1755542288" src="https://github.com/user-attachments/assets/cb4a5cca-fc17-466f-ad2d-e1e575e0c865" />## 🚌 Project Overview
 BusMate is an innovative mobile application designed to simplify campus transportation by providing real-time bus tracking, route information, and seamless navigation for students and drivers.
+
+
 
 ## 🌟 Key Features
 
