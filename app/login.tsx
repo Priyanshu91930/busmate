@@ -1,15 +1,15 @@
-import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View, Alert, ActivityIndicator } from 'react-native';
 import {
   GoogleSignin,
-  statusCodes,
+  statusCodes, // Import statusCodes for better error handling
 } from '@react-native-google-signin/google-signin';
+import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { doc, getFirestore, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../context/AuthContext';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GOOGLE_CONFIG } from '../config/google';
+import { auth, db } from '../context/AuthContext';
 
 // Use require for the image to avoid TypeScript issues
 const clgLogo = require('../assets/images/clg.png');
@@ -117,9 +117,10 @@ export default function LoginScreen() {
           await auth.signOut();
           return;
         }
-        console.log('User exists with matching role, proceeding...');
+        console.log('User exists with matching role, proceeding... RootLayout will navigate.');
+        // For existing users, do nothing. The AuthContext updates, and the RootLayout will automatically handle redirection.
       } else {
-        // Create new user document with the selected role
+        // This is a NEW user.
         await setDoc(userDocRef, {
           uid: user.uid,
           email: user.email,
@@ -129,9 +130,20 @@ export default function LoginScreen() {
           createdAt: new Date(),
         });
         console.log('New user created with role:', role);
+
+        // --- THIS IS THE CORRECTED LOGIC ---
+        // After creating a new user, we must navigate them to the correct screen.
+        if (role === 'driver') {
+            console.log('🚀 New driver detected. Navigating to Registration Form...');
+            router.replace('/driver/RegistrationForm');
+        } else if (role === 'student') {
+            console.log('🚀 New student detected. Navigating to Student Dashboard...');
+            router.replace('/student/dashboard');
+        }
+        // --- END OF CORRECTION ---
       }
 
-      // IMPORTANT: Explicitly update the user's role in Firestore
+      // This explicit update is slightly redundant if you are creating the doc above, but it ensures the role is set.
       await setDoc(userDocRef, { role: role }, { merge: true });
       console.log('User role updated to:', role);
 
@@ -152,16 +164,18 @@ export default function LoginScreen() {
         fullError: JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
       });
       
-      // Extremely Detailed Error Handling
-      const errorMessage = error.message || 'Unknown error occurred';
-      Alert.alert(
-        'Sign-In Error', 
-        `Detailed Error:\n${errorMessage}\n\nPlease check your configuration and try again.\n\nError Code: ${error.code || 'N/A'}`,
-        [{ 
-          text: 'OK', 
-          onPress: () => console.log('Full Error Details:', JSON.stringify(error, null, 2)) 
-        }]
-      );
+      // Use statusCodes for more specific error messages if available
+      if (error.code !== statusCodes.SIGN_IN_CANCELLED) {
+          const errorMessage = error.message || 'Unknown error occurred';
+          Alert.alert(
+            'Sign-In Error', 
+            `Detailed Error:\n${errorMessage}\n\nError Code: ${error.code || 'N/A'}`,
+            [{ 
+              text: 'OK', 
+              onPress: () => console.log('Full Error Details:', JSON.stringify(error, null, 2)) 
+            }]
+          );
+      }
     } finally {
       setIsLoading(false);
     }

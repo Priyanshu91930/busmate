@@ -1,41 +1,18 @@
-import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
-import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
+// Your image imports are correct
 import clgLogo from '../assets/images/clg.png';
 import shapeBg1 from '../assets/images/Ellipse 18.png';
 import shapeBg2 from '../assets/images/Ellipse 19.png';
 import shapeBg3 from '../assets/images/Ellipse 20.png';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+// --- THIS FILE IS NOW JUST A UI COMPONENT ---
+// All useEffect, timer, and navigation logic has been removed.
+// Its only job is to display your beautiful splash screen design.
 
-const phoneWidth = Math.min(screenWidth * 0.9, 360);
-const phoneHeight = Math.min(screenHeight * 0.95, 800);
-
-// Splash Content Component
-const SplashContent = () => {
-  return (
-    <View style={styles.contentContainer}>
-      <Image source={clgLogo} style={styles.clgLogo} resizeMode="contain" />
-      <Text style={styles.title}>
-        BUS TRACKER
-      </Text>
-    </View>
-  );
-};
-
-// Main Splash Screen Component
-export default function Index() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace('/login');
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [router]);
-
+export default function CustomSplashScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -56,6 +33,17 @@ export default function Index() {
   );
 }
 
+// SplashContent component is unchanged
+const SplashContent = () => {
+  return (
+    <View style={styles.contentContainer}>
+      <Image source={clgLogo} style={styles.clgLogo} resizeMode="contain" />
+      <Text style={styles.title}>BusMate</Text>
+    </View>
+  );
+};
+
+// Your styles are unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,

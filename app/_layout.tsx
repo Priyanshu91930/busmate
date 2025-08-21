@@ -6,8 +6,8 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import 'react-native-reanimated';
 
-import { AuthProvider, useAuth } from '../context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -17,63 +17,61 @@ const InitialLayout = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('🚨 FULL NAVIGATION DEBUG:', {
-      user: user ? {
-        uid: user.uid,
-        email: user.email,
-        role: user.role,
-        displayName: user.displayName
-      } : null,
-      isAuthLoading,
-      segments: segments,
-      currentGroup: segments[0] ?? 'NO_GROUP'
-    });
-
+    // --- STEP 1: Wait until all loading is complete ---
     if (isAuthLoading) {
-      console.log('🕒 Auth is still loading, waiting...');
+      return; // Do nothing until we know the auth state
+    }
+
+    const currentSegment = segments[0] ?? '';
+    const inStudentSection = currentSegment === 'student';
+    const inDriverSection = currentSegment === 'driver';
+
+    // --- STEP 2: Handle LOGGED-IN users ---
+    if (user) {
+      // Once logged in, hide the native splash immediately.
+      SplashScreen.hideAsync();
+      
+      if (user.role === 'student' && !inStudentSection) {
+        console.log('🚀 LOGGED IN as STUDENT -> NAVIGATING to dashboard');
+        router.replace('/student/dashboard');
+      } else if (user.role === 'driver' && !inDriverSection) {
+        console.log('🚀 LOGGED IN as DRIVER -> NAVIGATING to dashboard');
+        router.replace('/driver/dashboard');
+      }
+      return; // End the effect here for logged-in users
+    }
+
+    // --- STEP 3: Handle LOGGED-OUT users ---
+    // If we reach this point, it means user is null.
+    
+    // If they are trying to access a protected page, kick them out instantly.
+    if (inStudentSection || inDriverSection) {
+      console.log('🚫 LOGGED OUT user in protected area -> REDIRECTING to login');
+      router.replace('/login');
       return;
     }
 
-    // Detailed group checking
-    const currentGroup = segments[0] ?? '';
-    const inStudentGroup = currentGroup === 'student';
-    const inDriverGroup = currentGroup === 'driver';
+    // If they are at the entry point (index.tsx), handle the custom splash screen timer.
+    if (segments.length === 0) { // segments is empty only at the root ('/')
+      console.log('🕒 LOGGED OUT at root -> Showing custom splash screen');
+      // 1. Hide the native splash to show our custom JS splash screen.
+      SplashScreen.hideAsync();
+      
+      // 2. Wait for 5 seconds on the custom splash.
+      const timer = setTimeout(() => {
+        console.log('🚀 Splash timer finished -> NAVIGATING to login');
+        router.replace('/login');
+      }, 5000); // 5-second delay
 
-    console.log('🔍 Group Detailed Check:', {
-      currentGroup,
-      inStudentGroup,
-      inDriverGroup,
-      userRole: user?.role
-    });
-
-    if (user) {
-      // Explicit role-based navigation with detailed logging
-      if (user.role === 'student') {
-        console.log('🚀 STUDENT ROLE DETECTED - Attempting Navigation');
-        if (!inStudentGroup) {
-          console.log('🚀 FORCE NAVIGATING TO STUDENT DASHBOARD');
-          router.replace('/student/dashboard');
-        } else {
-          console.log('🟢 Already in Student Group');
-        }
-      } else if (user.role === 'driver') {
-        console.log('🚀 DRIVER ROLE DETECTED - Attempting Navigation');
-        if (!inDriverGroup) {
-          console.log('🚀 FORCE NAVIGATING TO DRIVER DASHBOARD');
-          router.replace('/driver/dashboard');
-        } else {
-          console.log('🟢 Already in Driver Group');
-        }
-      } else {
-        console.warn('⚠️ UNKNOWN USER ROLE:', user.role);
-      }
-    } else {
-      console.log('🚫 NO USER - Redirecting to Login');
-      router.replace('/login');
+      return () => clearTimeout(timer); // Cleanup timer
     }
+
   }, [user, isAuthLoading, segments]);
 
+
   if (isAuthLoading) {
+    // This spinner is only visible for a moment between font loading and auth check.
+    // The native splash covers most of it.
     return <View style={{ flex: 1, justifyContent: 'center' }}><ActivityIndicator size="large" /></View>;
   }
 
@@ -98,9 +96,11 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
+  // This layout no longer hides the splash screen itself.
+  // The InitialLayout now has full control.
+  // useEffect(() => {
+  //   if (loaded) SplashScreen.hideAsync(); // This line is removed
+  // }, [loaded]);
 
   if (!loaded) return null;
 
