@@ -6,19 +6,19 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Linking,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
 
-// Firebase
+// MODIFICATION: Added 'collection' and 'addDoc' for logging
 import { getApp } from 'firebase/app';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 
 // Auth + BusData
 import { auth, useAuth } from '../../context/AuthContext';
@@ -70,30 +70,21 @@ export default function DriverDashboard() {
 
   const locationInterval = useRef<any>(null);
 
-  // --- Fetch driver data ---
   useEffect(() => {
     const fetchDriverData = async () => {
       if (!user) {
         setIsLoading(false);
         return;
       }
-
       try {
         const driverDocRef = doc(db, 'drivers', user.uid);
         const driverDoc = await getDoc(driverDocRef);
-
         if (driverDoc.exists()) {
           const profileData = driverDoc.data() as DriverProfile;
           setDriverProfile(profileData);
-
-          const bus = BusData.BUS_ROUTES.find(
-            b => b.registration === profileData.assignedBusRegistration
-          );
+          const bus = BusData.BUS_ROUTES.find(b => b.registration === profileData.assignedBusRegistration);
           if (bus) {
-            const routeString =
-              bus.stops.length > 1
-                ? `${bus.stops[0]} - ${bus.stops[bus.stops.length - 1]}`
-                : bus.stops[0] || 'N/A';
+            const routeString = bus.stops.length > 1 ? `${bus.stops[0]} - ${bus.stops[bus.stops.length - 1]}` : bus.stops[0] || 'N/A';
             setAssignedBus({ number: bus.busNumber, route: routeString });
           }
         } else {
@@ -106,53 +97,74 @@ export default function DriverDashboard() {
         setIsLoading(false);
       }
     };
-
     fetchDriverData();
-
     return () => {
       if (locationInterval.current) clearInterval(locationInterval.current);
     };
   }, [user]);
 
   const menuItems = [
-    { icon: 'bus', label: 'Trips', color: '#10B981' },
-    { icon: 'image', label: 'Gallery', color: '#F59E0B' },
-    { icon: 'lock-closed', label: 'Shop', color: '#3B82F6' },
-    { icon: 'stats-chart', label: 'Report', color: '#8B5CF6' },
-    { icon: 'accessibility-outline', label: 'Seat', color: '#EF4444' },
-    {
-      icon: isSharingLocation ? 'radio-button-on' : 'paper-plane',
-      label: isSharingLocation ? 'Stop Sharing' : 'Share Location',
-      color: isSharingLocation ? '#EF4444' : '#10B981'
-    },
-    { icon: 'card', label: 'Credit', color: '#0EA5E9' },
-    { icon: 'map', label: 'Map', color: '#14B8A6' },
-    { icon: 'calendar', label: 'Calendar', color: '#6366F1' }
+    { icon: 'shield-checkmark-outline', label: 'SOS', color: '#EF4444', action: 'SOS' },
+    // --- ICON FIX: Replaced invalid icon name ---
+    { icon: 'car-sport-outline', label: 'Accident Alert', color: '#F59E0B', action: 'Accident Alert' },
+    { icon: 'videocam-outline', label: 'Dashcam', color: '#3B82F6', action: 'Dashcam' },
+    { icon: 'people-outline', label: 'Contact Buses', color: '#8B5CF6', action: 'Contact Buses' },
+    { icon: 'map-outline', label: 'Map View', color: '#14B8A6', action: 'Map' },
+    { icon: 'document-text-outline', label: 'Reports', color: '#059669', action: 'Reports' },
   ];
 
-  // --- Location Sharing ---
   const startSharingLocation = async () => {
+    if (!user) {
+      Alert.alert("Authentication Error", "Cannot share location without being logged in.");
+      return;
+    }
+
     let { status } = await Location.requestForegroundPermissionsAsync();
+
     if (status !== 'granted') {
-      Alert.alert('Permission denied', 'Permission to access location was denied.');
+      Alert.alert(
+        'Permission Required',
+        'Location access is needed to share the bus position. Please enable it in your phone settings.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() }
+        ]
+      );
       return;
     }
 
     setIsSharingLocation(true);
+    Alert.alert("Trip Started", "Your location is now being shared.");
+
     locationInterval.current = setInterval(async () => {
       try {
         const location = await Location.getCurrentPositionAsync({});
         const { latitude, longitude } = location.coords;
+        const driverId = user.uid;
+        
+        const locationDocRef = doc(db, 'driverLocations', driverId);
+        const logCollectionRef = collection(db, 'driverLocations', driverId, 'logs');
 
-        if (user) {
-          const locationDocRef = doc(db, 'driverLocations', user.uid);
-          await setDoc(locationDocRef, {
-            latitude,
-            longitude,
+        const liveLocationData = {
+          latitude, longitude,
+          timestamp: new Date(),
+          active: true,
+          busNumber: assignedBus?.number || 'N/A',
+          route: assignedBus?.route || 'N/A',
+          driverName: driverProfile?.fullName || 'Unknown Driver'
+        };
+
+        const logData = {
+            latitude, longitude,
             timestamp: new Date(),
-            active: true
-          });
-        }
+        };
+
+        // This will now work because of the new security rules
+        await Promise.all([
+            setDoc(locationDocRef, liveLocationData),
+            addDoc(logCollectionRef, logData)
+        ]);
+
       } catch (error) {
         console.error('Failed to send location:', error);
         stopSharingLocation();
@@ -162,12 +174,15 @@ export default function DriverDashboard() {
 
   const stopSharingLocation = async () => {
     setIsSharingLocation(false);
-    if (locationInterval.current) clearInterval(locationInterval.current);
-
+    if (locationInterval.current) {
+      clearInterval(locationInterval.current);
+    }
     if (user) {
-      const locationDocRef = doc(db, 'driverLocations', user.uid);
+      const driverId = user.uid;
+      const locationDocRef = doc(db, 'driverLocations', driverId);
       try {
         await setDoc(locationDocRef, { active: false }, { merge: true });
+        Alert.alert("Trip Ended", "Location sharing has been stopped.");
       } catch (error) {
         console.error('Failed to update status in Firestore:', error);
       }
@@ -176,30 +191,18 @@ export default function DriverDashboard() {
 
   const handleMenuItemPress = (label: string) => {
     switch (label) {
-      case 'Seat':
-        router.push('/driver/seat-selection');
-        break;
-      case 'Share Location':
-        startSharingLocation();
-        break;
-      case 'Stop Sharing':
-        stopSharingLocation();
-        break;
-      case 'Map':
-        setShowMap(true);
-        break;
-      default:
-        console.log(`Pressed ${label}`);
+      case 'Map': setShowMap(true); break;
+      case 'Dashcam': router.push('/driver/dashcam'); break;
+      case 'SOS': Alert.alert('SOS Activated', 'Emergency services have been notified.'); break;
+      case 'Accident Alert': Alert.alert('Accident Detection', 'This feature is under development.'); break;
+      case 'Contact Buses': Alert.alert('Contact Buses', 'This feature is under development.'); break;
+      case 'Reports': Alert.alert('Reports', 'This feature is under development.'); break;
+      default: console.log(`Pressed ${label}`);
     }
   };
 
-  // --- Loading & Error States ---
   if (isLoading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <View style={styles.center}><ActivityIndicator size="large" /></View>;
   }
 
   if (!driverProfile) {
@@ -215,7 +218,6 @@ export default function DriverDashboard() {
 
   if (showMap) return <MapViewScreen />;
 
-  // --- Profile Menu ---
   const ProfileMenu = () => {
     const menuOptions = [
       { label: 'Profile', icon: 'person-outline', onPress: () => {} },
@@ -223,35 +225,13 @@ export default function DriverDashboard() {
       { label: 'Logout', icon: 'log-out-outline', onPress: () => auth.signOut() }
     ];
     return (
-      <Modal
-        transparent
-        visible={isProfileMenuVisible}
-        onRequestClose={() => setIsProfileMenuVisible(false)}
-      >
+      <Modal transparent visible={isProfileMenuVisible} onRequestClose={() => setIsProfileMenuVisible(false)}>
         <Pressable style={styles.modalOverlay} onPress={() => setIsProfileMenuVisible(false)}>
           <View style={styles.profileMenuContainer}>
             {menuOptions.map((option, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.profileMenuItem}
-                onPress={() => {
-                  option.onPress();
-                  setIsProfileMenuVisible(false);
-                }}
-              >
-                <Ionicons
-                  name={option.icon as any}
-                  size={22}
-                  color={option.label === 'Logout' ? '#EF4444' : '#333'}
-                />
-                <Text
-                  style={[
-                    styles.profileMenuItemText,
-                    option.label === 'Logout' && { color: '#EF4444' }
-                  ]}
-                >
-                  {option.label}
-                </Text>
+              <TouchableOpacity key={index} style={styles.profileMenuItem} onPress={() => { option.onPress(); setIsProfileMenuVisible(false); }}>
+                <Ionicons name={option.icon as any} size={22} color={option.label === 'Logout' ? '#EF4444' : '#333'} />
+                <Text style={[styles.profileMenuItemText, option.label === 'Logout' && { color: '#EF4444' }]}>{option.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -260,10 +240,8 @@ export default function DriverDashboard() {
     );
   };
 
-  // --- Render UI ---
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={{ width: 40 }} />
         <Text style={styles.headerTitle}>Driver Dashboard</Text>
@@ -273,51 +251,32 @@ export default function DriverDashboard() {
       </View>
 
       <ScrollView>
-        {/* Profile Section */}
         <View style={styles.profileContainer}>
           <Image source={{ uri: driverProfile.profilePhotoUrl }} style={styles.profileImage} />
           <Text style={styles.profileName}>{driverProfile.fullName}</Text>
           <Text style={styles.profileEmail}>{driverProfile.email}</Text>
-
           <View style={styles.profileDetailsContainer}>
-            <View style={styles.profileDetail}>
-              <Text style={styles.profileDetailLabel}>Gender</Text>
-              <Text style={styles.profileDetailValue}>{driverProfile.gender}</Text>
-            </View>
-            <View style={styles.profileDetail}>
-              <Text style={styles.profileDetailLabel}>Phone</Text>
-              <Text style={styles.profileDetailValue}>{driverProfile.phoneNumber}</Text>
-            </View>
-            <View style={styles.profileDetail}>
-              <Text style={styles.profileDetailLabel}>Bus No.</Text>
-              <Text style={styles.profileDetailValue}>#{assignedBus?.number || 'N/A'}</Text>
-            </View>
-          </View>
-
-          {/* Search Bar */}
-          <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
-            <TextInput
-              placeholder="Searching for..."
-              placeholderTextColor="#9CA3AF"
-              style={styles.searchInput}
-            />
+            <View style={styles.profileDetail}><Text style={styles.profileDetailLabel}>Gender</Text><Text style={styles.profileDetailValue}>{driverProfile.gender}</Text></View>
+            <View style={styles.profileDetail}><Text style={styles.profileDetailLabel}>Phone</Text><Text style={styles.profileDetailValue}>{driverProfile.phoneNumber}</Text></View>
+            <View style={styles.profileDetail}><Text style={styles.profileDetailLabel}>Bus No.</Text><Text style={styles.profileDetailValue}>#{assignedBus?.number || 'N/A'}</Text></View>
           </View>
         </View>
 
-        {/* Dashboard Grid */}
-        <ScrollView contentContainerStyle={styles.gridContainer}>
+        <View style={styles.locationButtonContainer}>
+          <TouchableOpacity style={[styles.locationButton, { backgroundColor: isSharingLocation ? '#D32F2F' : '#388E3C' }]} onPress={isSharingLocation ? stopSharingLocation : startSharingLocation}>
+            <Ionicons name={isSharingLocation ? "stop-circle-outline" : "navigate-circle-outline"} size={24} color="white" />
+            <Text style={styles.locationButtonText}>{isSharingLocation ? 'Stop Sharing Location' : 'Start Sharing Location'}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.gridContainer}>
           {menuItems.map((item, index) => (
-            <Pressable
-              key={index}
-              style={[styles.gridItem, { backgroundColor: item.color }]}
-              onPress={() => handleMenuItemPress(item.label)}
-            >
-              <Ionicons name={item.icon as any} size={24} color="white" />
+            <Pressable key={index} style={[styles.gridItem, { backgroundColor: item.color }]} onPress={() => handleMenuItemPress(item.action || item.label)}>
+              <Ionicons name={item.icon as any} size={32} color="white" />
               <Text style={styles.gridItemText}>{item.label}</Text>
             </Pressable>
           ))}
-        </ScrollView>
+        </View>
       </ScrollView>
 
       <ProfileMenu />
@@ -342,7 +301,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 20, fontWeight: '600' },
   settingsButton: { padding: 5 },
-  profileContainer: { alignItems: 'center', paddingVertical: 20 },
+  profileContainer: { alignItems: 'center', paddingVertical: 20, paddingHorizontal: 20 },
   profileImage: { width: 100, height: 100, borderRadius: 50, marginBottom: 10 },
   profileName: { fontSize: 18, fontWeight: 'bold', color: '#1F2937' },
   profileEmail: { color: '#6B7280', marginBottom: 15 },
@@ -350,38 +309,64 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginBottom: 15
+    marginBottom: 5
   },
   profileDetail: { alignItems: 'center' },
   profileDetailLabel: { color: '#6B7280', fontSize: 12 },
   profileDetailValue: { color: '#1F2937', fontWeight: '600' },
-  searchContainer: {
+
+  locationButtonContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  locationButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
     borderRadius: 10,
-    paddingHorizontal: 15,
-    width: '90%',
-    height: 45
+    paddingVertical: 12,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
-  searchIcon: { marginRight: 10 },
-  searchInput: { flex: 1 },
+  locationButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     paddingHorizontal: 10,
-    paddingTop: 20
+    paddingTop: 10,
   },
   gridItem: {
     width: '30%',
     aspectRatio: 1,
-    margin: 5,
-    borderRadius: 10,
+    margin: '1.5%',
+    borderRadius: 15,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    padding: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
-  gridItemText: { color: 'white', marginTop: 5, fontSize: 12, textAlign: 'center' },
+  gridItemText: {
+      color: 'white',
+      marginTop: 8,
+      fontSize: 12,
+      fontWeight: '600',
+      textAlign: 'center'
+  },
+  
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -407,5 +392,5 @@ const styles = StyleSheet.create({
   mapScreenContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F3F4F6' },
   mapScreenText: { fontSize: 24, fontWeight: 'bold', marginTop: 20 },
   mapScreenSubText: { fontSize: 16, color: '#6B7280', marginTop: 10, textAlign: 'center', paddingHorizontal: 20 },
-  mapBackButton: { position: 'absolute', top: 40, left: 20, padding: 10, backgroundColor: 'white', borderRadius: 25, elevation: 5 }
+  mapBackButton: { position: 'absolute', top: 40, left: 20, padding: 10, backgroundColor: 'white', borderRadius: 25, elevation: 5 },
 });

@@ -8,6 +8,7 @@ export default function DriverLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="RegistrationForm" />
       <Stack.Screen name="dashboard" />
+      <Stack.Screen name="dashcam" />
       <Stack.Screen name="seat-selection" />
     </Stack>
   );

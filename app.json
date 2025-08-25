@@ -4,16 +4,21 @@
     "slug": "busmate",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/clg.png",
+    "icon": "./assets/images/icon.jpeg",
     "scheme": "busmate",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Busmate needs your location to share the bus's live position with students during a trip.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Busmate needs your location to share the bus's live position with students during a trip.",
+        "NSLocationAlwaysUsageDescription": "Busmate needs your location to share the bus's live position with students during a trip."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/clg.png",
+        "foregroundImage": "./assets/images/icon.jpeg",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -29,20 +34,23 @@
       },
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.FOREGROUND_SERVICE"
       ]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/clg.png"
+      "favicon": "./assets/images/icon.jpeg"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/clg.png",
+          "image": "./assets/images/icon.jpeg",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#0c4a6e"
@@ -57,9 +65,10 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Busmate needs your location to share the bus's live position with students during a trip."
         }
-      ]
+      ],
+      "expo-camera"
     ],
     "experiments": {
       "typedRoutes": true

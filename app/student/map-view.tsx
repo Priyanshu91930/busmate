@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image, // <-- ADDED
-  Modal, // <-- ADDED
+  Image,
+  Modal, // <-- MODIFIED
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -25,33 +25,38 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { getApp } from 'firebase/app';
-import { doc, getFirestore, onSnapshot } from 'firebase/firestore';
+// --- MODIFIED: Added collection and query for multi-document listening ---
+import { collection, getFirestore, onSnapshot, query } from 'firebase/firestore';
 import BusData from '../bus_data.json';
 const decode = require('polyline-decode');
 
-// --- ADDED: Import the authentication tools from your context ---
 import { auth, useAuth } from '../../context/AuthContext';
-
 
 const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-// Get the centralized Firebase app instance
 const app = getApp();
 const db = getFirestore(app);
 
-// --- TYPE DEFINITIONS & CONSTANTS (Unchanged) ---
-interface Coords {
+// --- TYPE DEFINITIONS & CONSTANTS ---
+interface Coords { latitude: number; longitude: number; }
+interface LocationPoint extends Coords { name: string; }
+interface BusRoute { registration: string; busNumber: string; stops: string[]; }
+
+// --- ADDED: Type definition for a live bus from Firestore ---
+interface LiveBus {
+  id: string; // Document ID from Firestore
   latitude: number;
   longitude: number;
-}
-interface LocationPoint extends Coords {
-  name: string;
-}
-interface BusRoute {
-  registration: string;
+  active: boolean;
+  driverName: string;
   busNumber: string;
-  stops: string[];
+  route: string;
+  lastUpdate: {
+    seconds: number;
+    nanoseconds: number;
+  };
 }
+
 const PANEL_HEIGHT = 400;
 const DESTINATION_NAME = BusData.GRAPHIC_ERA_UNIVERSITY.name;
 
@@ -59,12 +64,10 @@ export default function MapViewWithBusSelection() {
   const params = useLocalSearchParams();
   const { name: initialStartName } = params;
 
-  // --- ADDED: Get the current user and add state for the modal ---
   const { user } = useAuth();
   const [isProfileMenuVisible, setIsProfileMenuVisible] = useState(false);
 
-
-  // --- All of your original states are preserved ---
+  // --- Original states ---
   const [isMapReady, setIsMapReady] = useState(false);
   const [startLocationName, setStartLocationName] = useState<string | null>(null);
   const [startCoords, setStartCoords] = useState<Coords | null>(null);
@@ -74,11 +77,15 @@ export default function MapViewWithBusSelection() {
   const [relevantBuses, setRelevantBuses] = useState<BusRoute[]>([]);
   const [selectedBus, setSelectedBus] = useState<BusRoute | null>(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
-  const [busLocation, setBusLocation] = useState<LocationPoint | null>(null);
-  const [busStatus, setBusStatus] = useState<'loading' | 'online' | 'offline'>('loading');
   const [stopCoordinates, setStopCoordinates] = useState<LocationPoint[]>([]);
 
-  // --- All of your original functions and useEffects are preserved ---
+  // --- NEW STATE: To hold all live bus data from Firestore ---
+  const [liveBuses, setLiveBuses] = useState<LiveBus[]>([]);
+
+  // --- NEW STATE: To control the bus details modal ---
+  const [selectedBusDetails, setSelectedBusDetails] = useState<LiveBus | null>(null);
+
+  // --- Original functions (geocodeLocation, etc.) are unchanged ---
   const geocodeLocation = async (locationName: string): Promise<Coords | null> => {
     if (!GOOGLE_MAPS_API_KEY) { console.error("Google Maps API Key is missing."); return null; }
     const fullAddress = `${locationName}, Dehradun, India`;
@@ -89,13 +96,30 @@ export default function MapViewWithBusSelection() {
       if (json.status === 'OK' && json.results.length > 0) {
         const { lat, lng } = json.results[0].geometry.location;
         return { latitude: lat, longitude: lng };
-      } else {
-        console.warn(`Geocoding failed for "${fullAddress}": ${json.status}`);
-        return null;
-      }
+      } else { console.warn(`Geocoding failed for "${fullAddress}": ${json.status}`); return null; }
     } catch (error) { console.error("Failed to geocode location:", error); return null; }
   };
+  
+  // --- This useEffect is completely new and replaces the old one for a single driver ---
+  useEffect(() => {
+    const driverLocationsRef = collection(db, "driverLocations");
+    const q = query(driverLocationsRef);
 
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const buses: LiveBus[] = [];
+      querySnapshot.forEach((doc) => {
+        // Here we cast the document data to our LiveBus type
+        buses.push({ id: doc.id, ...doc.data() } as LiveBus);
+      });
+      setLiveBuses(buses); // Update state with all buses
+    });
+
+    // Cleanup listener on component unmount
+    return () => unsubscribe();
+  }, []);
+
+
+  // --- All other original useEffects and functions are preserved ---
   useEffect(() => {
     const setupInitialLocations = async () => {
       setIsGeocoding(true);
@@ -111,9 +135,7 @@ export default function MapViewWithBusSelection() {
           route.stops.some(stop => stop.toLowerCase() === initialStartName.toLowerCase())
         );
         setRelevantBuses(busesForStop);
-        if (busesForStop.length > 0) {
-          setSelectedBus(busesForStop[0]);
-        }
+        if (busesForStop.length > 0) { setSelectedBus(busesForStop[0]); }
       }
     };
     setupInitialLocations().finally(() => setIsGeocoding(false));
@@ -133,70 +155,37 @@ export default function MapViewWithBusSelection() {
   }, [selectedBus]);
 
   useEffect(() => {
-    if (selectedBus && startLocationName && stopCoordinates.length > 0) {
-      fetchOnRoadRoute();
-    }
+    if (selectedBus && startLocationName && stopCoordinates.length > 0) { fetchOnRoadRoute(); }
   }, [startLocationName, selectedBus, stopCoordinates]);
 
   const fetchOnRoadRoute = async () => {
-    if (!GOOGLE_MAPS_API_KEY || !selectedBus || !startLocationName || stopCoordinates.length === 0) {
-        setRoutePolyline([]);
-        return;
-    }
+    if (!GOOGLE_MAPS_API_KEY || !selectedBus || !startLocationName || stopCoordinates.length === 0) { setRoutePolyline([]); return; }
     const startIndex = selectedBus.stops.findIndex(stop => stop.toLowerCase() === startLocationName.toLowerCase());
-    if (startIndex === -1) {
-        console.warn("Start location is not on the selected bus route.");
-        setRoutePolyline([]);
-        return;
-    }
+    if (startIndex === -1) { console.warn("Start location is not on the selected bus route."); setRoutePolyline([]); return; }
     const origin = stopCoordinates.find(s => s.name.toLowerCase() === startLocationName.toLowerCase());
     const finalStop = stopCoordinates[stopCoordinates.length - 1];
-    if (!origin || !finalStop) {
-        console.error("Could not find coordinates for origin or final stop.");
-        return;
-    }
+    if (!origin || !finalStop) { console.error("Could not find coordinates for origin or final stop."); return; }
     const intermediateWaypoints = stopCoordinates.slice(startIndex + 1, stopCoordinates.length - 1).map(p => `${p.latitude},${p.longitude}`).join('|');
     const originStr = `${origin.latitude},${origin.longitude}`;
     const destStr = `${finalStop.latitude},${finalStop.longitude}`;
     let url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destStr}&key=${GOOGLE_MAPS_API_KEY}`;
-    if (intermediateWaypoints.length > 0) {
-      url += `&waypoints=optimize:true|${intermediateWaypoints}`;
-    }
+    if (intermediateWaypoints.length > 0) { url += `&waypoints=optimize:true|${intermediateWaypoints}`; }
     try {
       const response = await fetch(url);
       const json = await response.json();
       if (json.routes.length > 0) {
         const points = decode(json.routes[0].overview_polyline.points).map((point: number[]) => ({ latitude: point[0], longitude: point[1] }));
         setRoutePolyline(points);
-      } else {
-        console.warn("Directions API returned no routes for the given waypoints.");
-        setRoutePolyline([]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch directions:", error);
-    }
+      } else { console.warn("Directions API returned no routes."); setRoutePolyline([]); }
+    } catch (error) { console.error("Failed to fetch directions:", error); }
   };
-
-  useEffect(() => {
-    const driverId = "driver_123"; 
-    const docRef = doc(db, "driverLocations", driverId);
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setBusLocation({ name: "Live Bus", latitude: data.latitude, longitude: data.longitude });
-        setBusStatus(data.active ? 'online' : 'offline');
-      } else { setBusStatus('offline'); }
-    });
-    return () => unsubscribe();
-  }, []);
 
   const handleFetchUserLocation = async () => {
     setIsFetchingLocation(true);
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission Denied', 'Please enable location services.');
-      setIsFetchingLocation(false);
-      return;
+      setIsFetchingLocation(false); return;
     }
     try {
       let location = await Location.getCurrentPositionAsync({});
@@ -215,34 +204,18 @@ export default function MapViewWithBusSelection() {
   });
   const animatedPanelStyle = useAnimatedStyle(() => ({ transform: [{ translateY: panelY.value }] }));
 
-
-  // --- ADDED: The Profile Menu Modal component ---
   const ProfileMenu = () => {
     if (!user) return null;
     return (
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={isProfileMenuVisible}
-        onRequestClose={() => setIsProfileMenuVisible(false)}
-      >
-        <Pressable 
-          style={styles.modalOverlay} 
-          onPress={() => setIsProfileMenuVisible(false)}
-        >
+      <Modal animationType="fade" transparent={true} visible={isProfileMenuVisible} onRequestClose={() => setIsProfileMenuVisible(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setIsProfileMenuVisible(false)}>
           <View style={styles.profileMenuContainer}>
             <View style={styles.profileMenuHeader}>
               <Image source={{ uri: user.photoURL || undefined }} style={styles.profileMenuImage} />
               <Text style={styles.profileMenuName}>{user.displayName}</Text>
               <Text style={styles.profileMenuEmail}>{user.email}</Text>
             </View>
-            <TouchableOpacity 
-              style={styles.logoutButton}
-              onPress={() => {
-                setIsProfileMenuVisible(false);
-                auth.signOut();
-              }}
-            >
+            <TouchableOpacity style={styles.logoutButton} onPress={() => { setIsProfileMenuVisible(false); auth.signOut(); }}>
               <Ionicons name="log-out-outline" size={22} color="#EF4444" />
               <Text style={styles.logoutButtonText}>Logout</Text>
             </TouchableOpacity>
@@ -252,41 +225,73 @@ export default function MapViewWithBusSelection() {
     );
   };
 
+  // --- ADDED: The Bus Details Modal component ---
+  const BusDetailsModal = () => {
+    if (!selectedBusDetails) return null;
+
+    // Convert Firestore timestamp to a readable date string
+    const lastUpdateDate = selectedBusDetails.lastUpdate 
+      ? new Date(selectedBusDetails.lastUpdate.seconds * 1000).toLocaleString()
+      : 'N/A';
+  
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={!!selectedBusDetails}
+        onRequestClose={() => setSelectedBusDetails(null)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setSelectedBusDetails(null)}>
+          <View style={styles.detailsModalContainer}>
+            <Text style={styles.detailsModalTitle}>Bus Details</Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Driver:</Text>
+              <Text style={styles.detailValue}>{selectedBusDetails.driverName}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Bus No:</Text>
+              <Text style={styles.detailValue}>{selectedBusDetails.busNumber}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Route:</Text>
+              <Text style={styles.detailValue}>{selectedBusDetails.route}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Status:</Text>
+              <Text style={[styles.detailValue, { color: selectedBusDetails.active ? '#4CAF50' : '#F44336' }]}>
+                {selectedBusDetails.active ? 'Online' : 'Offline'}
+              </Text>
+            </View>
+             <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Last Update:</Text>
+              <Text style={styles.detailValue}>{lastUpdateDate}</Text>
+            </View>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setSelectedBusDetails(null)}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
+    );
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.container}>
-        {/* --- MODIFIED HEADER --- */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Bus Route</Text>
-          {/* Replaced notification icon with the new profile button */}
-          <TouchableOpacity 
-            style={styles.profileButton}
-            onPress={() => setIsProfileMenuVisible(true)}
-          >
-            {user?.photoURL ? (
-              <Image 
-                source={{ uri: user.photoURL }} 
-                style={styles.profileImage} 
-              />
-            ) : (
-              // Fallback icon if user has no photo
-              <Ionicons name="person-circle-outline" size={32} color="#4285F4" />
-            )}
+          <TouchableOpacity style={styles.profileButton} onPress={() => setIsProfileMenuVisible(true)}>
+            {user?.photoURL ? ( <Image source={{ uri: user.photoURL }} style={styles.profileImage} /> ) : ( <Ionicons name="person-circle-outline" size={32} color="#4285F4" /> )}
           </TouchableOpacity>
         </View>
 
-        {/* The rest of your UI is unchanged */}
         <MapView
           provider={PROVIDER_GOOGLE}
           style={styles.map}
-          initialRegion={{
-            latitude: 30.3165, longitude: 78.0322,
-            latitudeDelta: 0.12, longitudeDelta: 0.12,
-          }}
+          initialRegion={{ latitude: 30.3165, longitude: 78.0322, latitudeDelta: 0.12, longitudeDelta: 0.12 }}
           onMapReady={() => setIsMapReady(true)}
         >
-          {routePolyline.length > 0 && ( <Polyline coordinates={routePolyline} strokeColor="#FFD700" strokeWidth={5} zIndex={1} /> )}
+          {routePolyline.length > 0 && <Polyline coordinates={routePolyline} strokeColor="#FFD700" strokeWidth={5} zIndex={1} />}
           {startCoords && <Marker coordinate={startCoords} title={startLocationName || 'Start'} pinColor="green" zIndex={3} />}
           {destinationCoords && <Marker coordinate={destinationCoords} title={DESTINATION_NAME} pinColor="red" zIndex={3} />}
           {stopCoordinates.map((stop, index) => (
@@ -294,21 +299,27 @@ export default function MapViewWithBusSelection() {
               <View style={styles.stopMarker}><View style={styles.stopMarkerCore} /></View>
             </Marker>
           ))}
-          {busLocation && (
-            <Marker coordinate={busLocation} anchor={{ x: 0.5, y: 0.5 }} zIndex={99}>
-              <View style={[styles.statusIndicator, busStatus === 'online' ? styles.online : styles.offline]}>
-                <View style={styles.busMarker}><Text style={styles.busMarkerIcon}>🚌</Text></View>
+          
+          {/* --- MODIFIED: Map over all live buses to render markers --- */}
+          {liveBuses.map((bus) => (
+            <Marker
+              key={bus.id}
+              coordinate={{ latitude: bus.latitude, longitude: bus.longitude }}
+              anchor={{ x: 0.5, y: 0.5 }}
+              zIndex={99}
+              onPress={() => setSelectedBusDetails(bus)} // <-- Open modal on tap
+            >
+              <View style={[styles.statusIndicator, bus.active ? styles.online : styles.offline]}>
+                 <Ionicons name="bus" size={20} color="white" />
               </View>
             </Marker>
-          )}
+          ))}
         </MapView>
         
         <View style={[styles.locationInputContainer, { top: 110 }]}>
           <View style={styles.inputRow}>
             <Text style={styles.locationIcon}>🟢</Text>
-            <Text style={styles.inputText} numberOfLines={1}>
-              {startLocationName ? startLocationName : 'Choose starting point'}
-            </Text>
+            <Text style={styles.inputText} numberOfLines={1}>{startLocationName || 'Choose starting point'}</Text>
             <TouchableOpacity style={styles.gpsButton} onPress={handleFetchUserLocation}>
               {isFetchingLocation ? <ActivityIndicator size="small" color="#3B82F6" /> : <Ionicons name="locate" size={22} color="#3B82F6" />}
             </TouchableOpacity>
@@ -342,8 +353,10 @@ export default function MapViewWithBusSelection() {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* --- ADDED: Render the Profile Menu Modal --- */}
         <ProfileMenu />
+        
+        {/* --- ADDED: Render the Bus Details Modal --- */}
+        <BusDetailsModal />
 
         {(!isMapReady || isGeocoding) && (
           <View style={styles.loadingContainer}>
@@ -356,9 +369,8 @@ export default function MapViewWithBusSelection() {
   );
 }
 
-// --- Your original styles with NEW styles added for the profile modal ---
 const styles = StyleSheet.create({
-    // ... (All your original styles are preserved)
+    // --- All original styles preserved ---
     container: { flex: 1, backgroundColor: '#fff' },
     map: { flex: 1 },
     loadingContainer: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'},
@@ -384,97 +396,72 @@ const styles = StyleSheet.create({
     bookButton: { backgroundColor: '#3B82F6', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 10, marginBottom: 20, },
     disabledButton: { backgroundColor: '#E0E0E0' },
     bookButtonText: { fontSize: 18, fontWeight: 'bold', color: 'white' },
-    statusIndicator: { borderRadius: 30, padding: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 3, elevation: 6 },
+    noBusText: { textAlign: 'center', color: 'gray', marginTop: 20, fontSize: 16 },
+    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 50, paddingBottom: 10, backgroundColor: 'white', borderBottomWidth: 1, borderBottomColor: '#f0f0f0', elevation: 5 },
+    headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#333' },
+    profileButton: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', overflow: 'hidden', borderWidth: 2, borderColor: '#4285F4' },
+    profileImage: { width: '100%', height: '100%' },
+    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 },
+    profileMenuContainer: { width: '80%', maxWidth: 300, backgroundColor: 'white', borderRadius: 15, alignItems: 'center', paddingTop: 20, elevation: 10 },
+    profileMenuHeader: { alignItems: 'center', marginBottom: 20, paddingHorizontal: 20 },
+    profileMenuImage: { width: 80, height: 80, borderRadius: 40, marginBottom: 12 },
+    profileMenuName: { fontSize: 18, fontWeight: 'bold', color: '#333' },
+    profileMenuEmail: { fontSize: 14, color: '#666', marginTop: 4 },
+    logoutButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, width: '100%', justifyContent: 'center', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
+    logoutButtonText: { color: '#EF4444', fontSize: 16, fontWeight: '600', marginLeft: 8 },
+
+    // --- MODIFIED & NEW STYLES for Bus Markers and Details Modal ---
+    statusIndicator: { 
+      width: 40, height: 40, borderRadius: 20, 
+      justifyContent: 'center', alignItems: 'center',
+      shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, 
+      shadowOpacity: 0.3, shadowRadius: 3, elevation: 6,
+    },
     online: { backgroundColor: '#4CAF50' },
     offline: { backgroundColor: '#F44336' },
-    busMarker: { backgroundColor: 'white', padding: 6, borderRadius: 20 },
-    busMarkerIcon: { fontSize: 20 },
-    noBusText: { textAlign: 'center', color: 'gray', marginTop: 20, fontSize: 16 },
-
-    // Your original header styles
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 20,
-      paddingTop: 50, // Added more top padding
-      paddingBottom: 10,
-      backgroundColor: 'white',
-      borderBottomWidth: 1,
-      borderBottomColor: '#f0f0f0',
-      elevation: 5,
-    },
-    headerTitle: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#333',
-    },
-    
-    // --- NEW STYLES for the Profile Button and Modal ---
-    profileButton: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'hidden',
-      borderWidth: 2,
-      borderColor: '#4285F4',
-    },
-    profileImage: {
-      width: '100%',
-      height: '100%',
-    },
-    modalOverlay: {
-      flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-    },
-    profileMenuContainer: {
-      width: '80%',
-      maxWidth: 300,
+    detailsModalContainer: {
+      width: '90%',
       backgroundColor: 'white',
       borderRadius: 15,
-      alignItems: 'center',
-      paddingTop: 20,
+      padding: 25,
       elevation: 10,
     },
-    profileMenuHeader: {
-      alignItems: 'center',
-      marginBottom: 20,
-      paddingHorizontal: 20,
-    },
-    profileMenuImage: {
-      width: 80,
-      height: 80,
-      borderRadius: 40,
-      marginBottom: 12,
-    },
-    profileMenuName: {
-      fontSize: 18,
+    detailsModalTitle: {
+      fontSize: 22,
       fontWeight: 'bold',
-      color: '#333',
+      marginBottom: 20,
+      textAlign: 'center',
     },
-    profileMenuEmail: {
-      fontSize: 14,
-      color: '#666',
-      marginTop: 4,
-    },
-    logoutButton: {
+    detailRow: {
       flexDirection: 'row',
-      alignItems: 'center',
-      paddingVertical: 15,
-      width: '100%',
-      justifyContent: 'center',
-      borderTopWidth: 1,
-      borderTopColor: '#f0f0f0',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+      paddingBottom: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: '#f0f0f0',
     },
-    logoutButtonText: {
-      color: '#EF4444',
+    detailLabel: {
       fontSize: 16,
+      color: '#666',
       fontWeight: '600',
-      marginLeft: 8,
+    },
+    detailValue: {
+      fontSize: 16,
+      color: '#333',
+      fontWeight: 'bold',
+      flex: 1,
+      textAlign: 'right'
+    },
+    closeButton: {
+      backgroundColor: '#3B82F6',
+      padding: 12,
+      borderRadius: 10,
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    closeButtonText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: 'white',
     },
 });
