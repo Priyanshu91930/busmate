@@ -1,5 +1,5 @@
 # BusMate: Smart Campus Bus Tracking Application
-
+<img width="1898" height="865" alt="image" src="https://github.com/user-attachments/assets/1da89b8d-2cb2-4cbb-b9af-6e93c51e7e83" />
 <table>
 <tr>
   <td>
